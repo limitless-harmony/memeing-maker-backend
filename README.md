@@ -1,2 +1,2 @@
-# memeing-maker
-Making Memeing Maker: A game for creating and sharing meaningful memes
+# memeing-maker-backend
+Memeing Maker Backend
