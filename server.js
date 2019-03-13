@@ -1,37 +1,36 @@
-import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
-import logger from 'morgan';
+import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
-import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+
+import logger from 'console';
 import routes from './routes';
 
-
-dotenv.config();
 const app = express();
 const env = process.env.NODE_ENV || 'development';
-const port = env === 'development' ? 4001 : process.env.PORT;
+const PORT = env === 'development' ? 4001 : process.env.PORT;
 
 
-// bluebird to add supoort for promises with queries
-mongoose.Promise = require('bluebird');
+mongoose.Promise = global.Promise;
 
 // DB CONNECTION INSTANCE
-mongoose.connect('mongodb://localhost/MemeMakerDB', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/MemeMakerDB', {
+  useCreateIndex: true,
+  useNewUrlParser: true
+})
+  .then(() => logger.log(`Connection to mongodb successful`))
+  .catch(error => logger.log(`Unable to connect`, error));
 
-// Routes
 routes(app);
 
-
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Cross Origin access
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+app.get('/', (req, res) => 
+  res.send('Send memes')
+);
 
-app.get('/', (req, res) => res.send('Send memes'));
-
-app.listen(port, () => console.log(`Memeing Server is listening on port ${port}!`));
+app.listen(PORT, () => logger.log(`Listening on ${PORT}!`));
 
 export default app;
