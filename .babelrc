@@ -1,13 +1,9 @@
 {
   "presets": [
-    [
-      "env",
-      {
-        "targets": {
-          "node": "current"
-        }
-      }
-    ],
-    "stage-0"
+    "@babel/preset-env"
+  ],
+  "plugins": [
+    "@babel/plugin-syntax-object-rest-spread",
+    "@babel/plugin-transform-runtime"
   ]
 }
