@@ -18,8 +18,8 @@ mongoose.connect('mongodb://localhost/MemeMakerDB', {
   useCreateIndex: true,
   useNewUrlParser: true
 })
-  .then(() => logger.log(`Connection to mongodb successful`))
-  .catch(error => logger.log(`Unable to connect`, error));
+  .then(() => logger.log('Connection to mongodb successful'))
+  .catch(error => logger.log('Unable to connect', error));
 
 routes(app);
 
@@ -27,9 +27,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => 
-  res.send('Send memes')
-);
+app.get('/', (req, res) => res.send('Send memes'));
 
 app.listen(PORT, () => logger.log(`Listening on ${PORT}!`));
 
