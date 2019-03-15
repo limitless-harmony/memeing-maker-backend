@@ -4,6 +4,10 @@ export default {
     clientID: process.env.GoogleClientID,
     clientSecret: process.env.GoogleClientSecret,
   },
+  linkedIn: {
+    clientID: process.env.LinkedInClientID,
+    clientSecret: process.env.LinkedInClientSecret,
+  },
   mongodb: {
     dbURI: process.env.MONGOURI,
   }
