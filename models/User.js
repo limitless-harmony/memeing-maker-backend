@@ -1,18 +1,15 @@
 import mongoose, { Schema } from 'mongoose';
 
 
-// TODO: TO BE FLESHED OUT
 const User = new Schema({
-  id: Schema.ObjectId,
-  email: {
-    type: String,
-    required: 'Please enter a title'
-  },
-  status: {
-    type: String,
-    enum: ['done', 'not started', 'in progress'],
-    default: 'not started'
-  }
+  name: String,
+  email: String,
+  imageUrl: String,
+  googleId: String,
+  linkedInId: String,
+  facebookId: String,
+}, {
+  timestamps: true
 });
 
 // Add full text search
