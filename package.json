@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/mocha --exit --compilers js:@babel/register",
-    "postinstall": "npm run build",
+    "post:install": "npm run build",
     "build": "babel ./ --out-dir build",
-    "start": "node build/server",
+    "start": "npm run post:install && node build/server",
     "start:dev": "nodemon --exec babel-node server"
   },
   "repository": {
