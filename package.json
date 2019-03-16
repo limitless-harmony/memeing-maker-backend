@@ -4,10 +4,10 @@
   "description": "Making Memeing Maker: A game for creating and sharing meaningful memes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "npm run build",
+    "test": "./node_modules/.bin/mocha --exit --compilers js:@babel/register",
+    "post:install": "npm run build",
     "build": "babel ./ --out-dir build",
-    "start": "node build/server",
+    "start": "npm run post:install && node build/server",
     "start:dev": "nodemon --exec babel-node server"
   },
   "repository": {
