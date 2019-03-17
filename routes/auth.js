@@ -27,4 +27,15 @@ router.route('/linkedin')
 router.route('/linkedin/success')
   .get(passport.authenticate('linkedin', { session: false }), Auth.loginSuccess);
 
+router.route('/facebook')
+  .get(passport.authenticate('facebook', {
+    scope: [
+      'read_stream',
+      'r_basicprofile'
+    ]
+  }));
+
+router.route('/facebook/success')
+  .get(passport.authenticate('facebook', { session: false }), Auth.loginSuccess);
+
 export default router;
