@@ -12,6 +12,10 @@ export default {
     clientID: process.env.FacebookAPPID,
     clientSecret: process.env.FacebookAPPSecret,
   },
+  jwt: {
+    secret: process.env.JWTSecret,
+    expiresIn: process.env.JWTExpiry,
+  },
   mongodb: {
     dbURI: process.env.MONGOURI,
   }
