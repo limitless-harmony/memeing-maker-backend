@@ -1,5 +1,5 @@
 import User from '../models/User';
-import { ResponseError, ResponseSuccess } from '../helpers/Responses';
+import { responseError, responseSuccess } from '../helpers/responses';
 
 /**
  * [UserController description]
@@ -16,9 +16,9 @@ class UserController {
     try {
       users = await User.find();
     } catch (error) {
-      return res.status(400).json(ResponseError(400, error, 'Could not fetch users'));
+      return responseError(400, error, 'Could not fetch users', res);
     }
-    return res.status(200).json(ResponseSuccess(200, users, 'users found'));
+    return responseSuccess(200, users, 'users found', res);
   }
 }
 
