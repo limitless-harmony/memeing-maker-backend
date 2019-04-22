@@ -8,7 +8,7 @@ const checkRequired = (body, requiredFields) => {
 
   // Checks that all required fields are present
   requiredFields.forEach((element) => {
-    if (!(inputs.includes(element))) {
+    if (!(element in inputs)) {
       missingRequired = true;
       errors[element] = `${element} is required`;
     }
