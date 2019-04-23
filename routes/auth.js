@@ -28,7 +28,7 @@ router.route('/linkedin/success')
   .get(passport.authenticate('linkedin', { session: false }), Auth.loginSuccess);
 
 router.route('/facebook')
-  .get(passport.authenticate('facebook', { scope: 'read_stream' }));
+  .get(passport.authenticate('facebook', { scope: ['email', 'user_link'] }));
 
 router.route('/facebook/success')
   .get(passport.authenticate('facebook', { session: false }), Auth.loginSuccess);

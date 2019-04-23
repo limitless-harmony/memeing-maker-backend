@@ -3,14 +3,17 @@ export default {
   google: {
     clientID: process.env.GoogleClientID,
     clientSecret: process.env.GoogleClientSecret,
+    callbackURL: '/auth/google/success',
   },
   linkedIn: {
     clientID: process.env.LinkedInClientID,
     clientSecret: process.env.LinkedInClientSecret,
+    callbackURL: '/auth/linkedIn/success',
   },
   facebook: {
     clientID: process.env.FacebookAPPID,
     clientSecret: process.env.FacebookAPPSecret,
+    callbackURL: '/auth/facebook/success',
   },
   jwt: {
     secret: process.env.JWTSecret,
