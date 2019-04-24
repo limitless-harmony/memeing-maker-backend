@@ -8,7 +8,7 @@ export default {
   linkedIn: {
     clientID: process.env.LinkedInClientID,
     clientSecret: process.env.LinkedInClientSecret,
-    callbackURL: '/auth/linkedIn/success',
+    callbackURL: '/auth/linkedin/success',
   },
   facebook: {
     clientID: process.env.FacebookAPPID,
