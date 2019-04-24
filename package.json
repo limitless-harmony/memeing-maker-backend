@@ -1,13 +1,13 @@
 {
   "name": "memeing-maker",
   "version": "1.0.0",
-  "description": "Making Memeing Maker: A game for creating and sharing meaningful memes",
-  "main": "index.js",
+  "description": "Memeing Maker: A game for creating and sharing meaningful memes",
+  "main": "src/server.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha --exit --compilers js:@babel/register",
+    "test": "mocha --exit --require @babel/register",
     "post:install": "npm run build",
-    "build": "babel ./ --out-dir build",
-    "start": "npm run post:install && node build/server",
+    "build": "babel src --out-dir build",
+    "start": "npm run build && node build/server",
     "start:dev": "nodemon --exec babel-node server"
   },
   "repository": {
