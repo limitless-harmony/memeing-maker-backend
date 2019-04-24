@@ -1,38 +1,63 @@
 import Token from './Token';
 import User from '../models/User';
 
-const makeUserFromProfile = (profile, extraFields) => {
-  const {
-    displayName: name,
-    _json: { email, picture: imageUrl } = {}
-  } = profile;
-
-  const user = {
-    name, email, imageUrl, ...extraFields
-  };
-  return user;
-};
-
 export const google = async (accessToken, refreshToken, profile, done) => {
   const exisitingUser = await User.findOne({ googleId: profile.id });
-  const newUser = new User(makeUserFromProfile(profile, { googleId: profile.id }));
-  const newlyCreatedUser = await newUser.save();
+
+  const {
+    sub: googleId, name, picture: imageUrl, email
+  } = profile._json;
+
+  const newUser = new User({
+    authProvider: profile.provider,
+    googleId,
+    name,
+    imageUrl,
+    email,
+  });
+
   if (exisitingUser) return done(null, { token: Token.sign(exisitingUser) });
+
+  const newlyCreatedUser = await newUser.save();
   return done(null, { token: Token.sign(newlyCreatedUser) });
 };
 
 export const linkedin = async (accessToken, refreshToken, profile, done) => {
   const exisitingUser = await User.findOne({ linkedinId: profile.id });
-  const newUser = new User(makeUserFromProfile(profile, { linkedinId: profile.id }));
-  const newlyCreatedUser = await newUser.save();
+
+  const {
+    id: linkedinId, formattedName: name, pictureUrl: imageUrl, emailAddress: email
+  } = profile._json;
+
+  const newUser = new User({
+    authProvider: profile.provider,
+    linkedinId,
+    name,
+    imageUrl,
+    email,
+  });
   if (exisitingUser) return done(null, { token: Token.sign(exisitingUser) });
+
+  const newlyCreatedUser = await newUser.save();
   return done(null, { token: Token.sign(newlyCreatedUser) });
 };
 
 export const facebook = async (accessToken, refreshToken, profile, done) => {
   const exisitingUser = await User.findOne({ facebookId: profile.id });
-  const newUser = new User(makeUserFromProfile(profile, { facebookId: profile.id }));
-  const newlyCreatedUser = await newUser.save();
+
+  const {
+    id: facebookId, email, first_name: firstname, last_name: lastname
+  } = profile._json;
+
+  const newUser = new User({
+    authProvider: profile.provider,
+    facebookId,
+    name: `${firstname} ${lastname}`,
+    imageUrl: `https://graph.facebook.com/${facebookId}/picture?type=large`,
+    email,
+  });
   if (exisitingUser) return done(null, { token: Token.sign(exisitingUser) });
+
+  const newlyCreatedUser = await newUser.save();
   return done(null, { token: Token.sign(newlyCreatedUser) });
 };
