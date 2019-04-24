@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 
 import logger from 'console';
 import routes from './routes';
+import { responseSuccess } from './helpers/responses';
 
 const app = express();
 const env = process.env.NODE_ENV || 'development';
@@ -28,7 +29,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 routes(app);
 
-app.get('/', (req, res) => res.send('Send memes'));
+app.use('/', (req, res) => responseSuccess(200, {}, 'Welcome to Memeing Maker', res));
 
 app.listen(PORT, () => logger.log(`Listening on ${PORT}!`));
 
