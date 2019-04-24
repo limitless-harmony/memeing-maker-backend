@@ -1,18 +1,31 @@
 import mongoose, { Schema } from 'mongoose';
 
-
 const User = new Schema({
-  name: String,
-  email: String,
-  imageUrl: String,
-  googleId: String,
-  linkedInId: String,
-  facebookId: String,
+  name: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  imageUrl: {
+    type: String,
+  },
+  googleId: {
+    type: String,
+  },
+  linkedinId: {
+    type: String,
+  },
+  facebookId: {
+    type: String,
+  },
+  authProvider: {
+    type: String,
+  }
 }, {
-  timestamps: true
+  timestamps: true,
 });
 
-// Add full text search
 User.index({ '$**': 'text' });
 
 export default mongoose.model('User', User);
