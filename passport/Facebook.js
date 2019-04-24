@@ -3,4 +3,8 @@ import { facebook } from '../helpers/Passport';
 
 import config from '../config/keys';
 
-export default new FacebookStrategy(config.facebook, facebook);
+export default new FacebookStrategy({
+  ...config.facebook,
+  scope: ['email', 'public_profile'],
+  profileFields: ['id', 'email', 'first_name', 'last_name', 'picture']
+}, facebook);

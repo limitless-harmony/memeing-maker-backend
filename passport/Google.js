@@ -3,4 +3,7 @@ import { google } from '../helpers/Passport';
 
 import config from '../config/keys';
 
-export default new GoogleStrategy(config.google, google);
+export default new GoogleStrategy({
+  ...config.google,
+  scope: ['profile', 'email'],
+}, google);
