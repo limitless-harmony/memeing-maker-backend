@@ -15,7 +15,8 @@ const PORT = env === 'development' ? 4001 : process.env.PORT;
 mongoose.Promise = global.Promise;
 
 // DB CONNECTION INSTANCE
-mongoose.connect('mongodb://localhost/MemeMakerDB', {
+const dbUrl = process.env.MONGODB_URI || 'mongodb://localhost/MemeMakerDB';
+mongoose.connect(dbUrl, {
   useCreateIndex: true,
   useNewUrlParser: true
 })
