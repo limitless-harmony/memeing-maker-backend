@@ -6,30 +6,17 @@ import Auth from '../controllers/Auth';
 const router = Router();
 
 router.route('/google')
-  .get(passport.authenticate('google', {
-    scope: [
-      'profile',
-      'email'
-    ]
-  }));
-
+  .get(passport.authenticate('google'));
 router.route('/google/success')
   .get(passport.authenticate('google', { session: false }), Auth.loginSuccess);
 
 router.route('/linkedin')
-  .get(passport.authenticate('linkedin', {
-    scope: [
-      'r_emailaddress',
-      'r_basicprofile'
-    ]
-  }));
-
+  .get(passport.authenticate('linkedin'));
 router.route('/linkedin/success')
   .get(passport.authenticate('linkedin', { session: false }), Auth.loginSuccess);
 
 router.route('/facebook')
-  .get(passport.authenticate('facebook', { scope: ['email', 'user_link'] }));
-
+  .get(passport.authenticate('facebook'));
 router.route('/facebook/success')
   .get(passport.authenticate('facebook', { session: false }), Auth.loginSuccess);
 
