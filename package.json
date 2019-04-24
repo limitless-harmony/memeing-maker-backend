@@ -5,9 +5,9 @@
   "main": "src/server.js",
   "scripts": {
     "test": "mocha --exit --require @babel/register",
-    "post:install": "npm run build",
+    "heroku-postbuild": "npm run build",
     "build": "babel src --out-dir build",
-    "start": "npm run build && node build/server",
+    "start": "node build/server",
     "start:dev": "nodemon --exec babel-node server"
   },
   "repository": {
