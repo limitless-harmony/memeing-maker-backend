@@ -48,7 +48,7 @@ class MemeController {
       topText,
       bottomText,
       image,
-      userId,
+      user,
       name,
     } = req.body;
 
@@ -57,7 +57,7 @@ class MemeController {
         topText,
         bottomText,
         image,
-        userId,
+        user,
         name,
       });
       return responseSuccess(200, meme, 'Meme created successfully', res);
