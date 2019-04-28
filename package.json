@@ -8,7 +8,7 @@
     "heroku-postbuild": "npm run build",
     "build": "rm -rf build && babel src --out-dir build",
     "start": "node build/server",
-    "start:dev": "nodemon --exec babel-node server"
+    "start:dev": "nodemon --exec babel-node src/server"
   },
   "repository": {
     "type": "git",

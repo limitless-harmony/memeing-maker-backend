@@ -16,9 +16,9 @@ const Meme = new Schema({
     type: String,
     required: 'A meme must have a name'
   },
-  userId: {
-    type: String,
-    required: 'A user id is required'
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
   flagged: {
     type: Number,
@@ -29,7 +29,7 @@ const Meme = new Schema({
     default: false,
   },
 
-});
+}, { timestamps: true });
 
 // Add full text search
 Meme.index({ '$**': 'text' });

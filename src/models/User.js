@@ -1,21 +1,30 @@
 import mongoose, { Schema } from 'mongoose';
 
-
-// TODO: TO BE FLESHED OUT
 const User = new Schema({
   id: Schema.ObjectId,
+  name: {
+    type: String,
+  },
   email: {
     type: String,
-    required: 'Please enter a title'
   },
-  status: {
+  imageUrl: {
     type: String,
-    enum: ['done', 'not started', 'in progress'],
-    default: 'not started'
+  },
+  googleId: {
+    type: String,
+  },
+  linkedinId: {
+    type: String,
+  },
+  facebookId: {
+    type: String,
+  },
+  authProvider: {
+    type: String,
   }
-});
+}, { timestamps: true });
 
-// Add full text search
 User.index({ '$**': 'text' });
 
 export default mongoose.model('User', User);
