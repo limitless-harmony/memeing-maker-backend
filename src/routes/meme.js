@@ -4,7 +4,6 @@ import MemeController from '../controllers/MemeController';
 import saveImage from '../middlewares/aws';
 import { validateMeme } from '../middlewares/validators';
 
-
 const router = Router();
 
 router.get('/', MemeController.getMemes);
