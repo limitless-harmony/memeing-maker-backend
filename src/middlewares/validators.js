@@ -1,5 +1,4 @@
-import checkRequired from '../helpers/checkRequired';
-import { responseError } from '../helpers/responses';
+import { checkRequired, responseError } from '../helpers';
 
 export const validateMeme = (req, res, next) => {
   const requiredFields = ['image'];
