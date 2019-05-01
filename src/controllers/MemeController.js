@@ -140,7 +140,7 @@ class MemeController {
   }
 
   /**
-   * Removes a meme from a meme wall
+   * Reacts to a meme
    * @param {Object} req the request object
    * @param {Object} res the response object
    * @return {Promise} a response object containing an array of found memes
@@ -187,6 +187,29 @@ class MemeController {
         { new: true }
       );
       return responseSuccess(200, updatedMeme, 'You have successfully reacted to this meme', res);
+    } catch (error) {
+      return responseError(500, error, error.message, res);
+    }
+  }
+
+  /**
+   * Flags a meme
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing an array of found memes
+   */
+  static async flagAMeme(req, res) {
+    const { memeId } = req.params;
+    const { id: userId } = req.user;
+    if (!isValidId(memeId)) return responseError(400, {}, 'Please provide a valid meme ID', res);
+
+    try {
+      const flaggedMeme = await Meme.findOneAndUpdate(
+        { _id: memeId },
+        { $addToSet: { flagged: userId } },
+        { new: true }
+      );
+      return responseSuccess(200, flaggedMeme, 'You have successfully reacted to this meme', res);
     } catch (error) {
       return responseError(500, error, error.message, res);
     }

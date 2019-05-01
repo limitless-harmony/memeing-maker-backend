@@ -20,10 +20,10 @@ const Meme = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
-  flagged: {
-    type: Number,
-    default: 0
-  },
+  flagged: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
   reactions: {
     type: Number,
     default: 0
