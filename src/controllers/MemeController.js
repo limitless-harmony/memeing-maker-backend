@@ -1,6 +1,8 @@
+/* eslint no-bitwise: ["error", { "int32Hint": true }] */
 import Meme from '../models/Meme';
 import Wall from '../models/Wall';
 import { responseError, responseSuccess, isValidId } from '../helpers';
+import User from '../models/User';
 
 /**
  * [MemeController description]
@@ -8,9 +10,9 @@ import { responseError, responseSuccess, isValidId } from '../helpers';
 class MemeController {
   /**
    * Gets all the available memes in the database
-   * @param  {Object}  req the request object
-   * @param  {Object}  res the response object
-   * @return {Promise}     a response object containing an array of found memes
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing an array of found memes
    */
   static async getMemes(req, res) {
     try {
@@ -24,9 +26,9 @@ class MemeController {
 
   /**
    * Gets featured memes
-   * @param  {Object}  req the request object
-   * @param  {Object}  res the response object
-   * @return {Promise}     a response object containing an array of found memes
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing an array of found memes
    */
   static async getFeaturedMemes(req, res) {
     try {
@@ -40,16 +42,16 @@ class MemeController {
 
   /**
    * creates a meme in the database
-   * @param  {Object}  req the request object
-   * @param  {Object}  res the response object
-   * @return {Promise}     a response object containing the just created meme.
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing the just created meme.
    */
   static async createMeme(req, res) {
     const {
       topText,
       bottomText,
       image,
-      user,
+      creator,
       name,
     } = req.body;
 
@@ -58,10 +60,10 @@ class MemeController {
         topText,
         bottomText,
         image,
-        user,
+        creator,
         name,
       });
-      return responseSuccess(200, meme, 'Meme created successfully', res);
+      return responseSuccess(201, meme, 'Meme created successfully', res);
     } catch (error) {
       return responseError(500, error, 'Could not create the meme', res);
     }
@@ -69,8 +71,8 @@ class MemeController {
 
   /**
    * creates a meme wall in the database
-   * @param  {Object}  req the request object
-   * @param  {Object}  res the response object
+   * @param {Object} req the request object
+   * @param {Object} res the response object
    * @return {Promise} a response object containing the just created meme.
    */
   static async createMemeWall(req, res) {
@@ -86,7 +88,7 @@ class MemeController {
         creator,
         memes,
       });
-      return responseSuccess(200, memeWall, 'Meme wall created successfully', res);
+      return responseSuccess(201, memeWall, 'Meme wall created successfully', res);
     } catch (error) {
       if (error.code && error.code === 11000) {
         return responseError(409, error, 'A meme wall with the same name already exists. Please use a different name', res);
@@ -98,9 +100,9 @@ class MemeController {
 
   /**
    * Gets a meme wall
-   * @param  {Object}  req the request object
-   * @param  {Object}  res the response object
-   * @return {Promise}     a response object containing an array of found memes
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing an array of found memes
    */
   static async getAMemeWall(req, res) {
     const { id } = req.params;
@@ -116,8 +118,8 @@ class MemeController {
 
   /**
    * Adds a meme to a meme wall
-   * @param  {Object}  req the request object
-   * @param  {Object}  res the response object
+   * @param {Object} req the request object
+   * @param {Object} res the response object
    * @return {Promise} a response object containing an array of found memes
    */
   static async addToMemeWall(req, res) {
@@ -139,8 +141,8 @@ class MemeController {
 
   /**
    * Removes a meme from a meme wall
-   * @param  {Object}  req the request object
-   * @param  {Object}  res the response object
+   * @param {Object} req the request object
+   * @param {Object} res the response object
    * @return {Promise} a response object containing an array of found memes
    */
   static async removeFromMemeWall(req, res) {
@@ -155,6 +157,36 @@ class MemeController {
         { new: true }
       );
       return responseSuccess(200, updatedMemeWall, 'meme removed from wall successfully', res);
+    } catch (error) {
+      return responseError(500, error, error.message, res);
+    }
+  }
+
+  /**
+   * Reacts to a meme
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing an array of found memes
+   */
+  static async reactToMeme(req, res) {
+    const { reactions } = req.body;
+    const { memeId } = req.params;
+    if (!isValidId(memeId)) return responseError(400, {}, 'Please provide a valid meme ID', res);
+    const castReactions = reactions | 0;
+    if (!castReactions) return responseError(400, {}, 'Reactions must be a number', res);
+    try {
+      const updatedMeme = await Meme.findOneAndUpdate(
+        { _id: memeId },
+        { $inc: { reactions: castReactions } },
+        { new: true }
+      );
+      const { creator } = updatedMeme;
+      await User.findOneAndUpdate(
+        { _id: creator },
+        { $inc: { reactions: castReactions } },
+        { new: true }
+      );
+      return responseSuccess(200, updatedMeme, 'You have successfully reacted to this meme', res);
     } catch (error) {
       return responseError(500, error, error.message, res);
     }

@@ -23,10 +23,17 @@ const User = new Schema({
   },
   authProvider: {
     type: String,
-  }
-}, {
-  timestamps: true,
-});
+  },
+  role: {
+    type: String,
+    enum: ['Player', 'Facilitator', 'Admin'],
+    default: 'Player',
+  },
+  reactions: {
+    type: Number,
+    default: 0
+  },
+}, { timestamps: true });
 
 User.index({ '$**': 'text' });
 

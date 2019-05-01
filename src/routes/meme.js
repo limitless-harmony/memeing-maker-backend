@@ -9,5 +9,6 @@ const router = Router();
 router.get('/', MemeController.getMemes);
 router.post('/', validateMeme, saveImage, MemeController.createMeme);
 router.get('/featured', MemeController.getFeaturedMemes);
+router.put('/:memeId/react', MemeController.reactToMeme);
 
 export default router;
