@@ -9,7 +9,6 @@ import routes from './routes';
 import { responseSuccess, responseError } from './helpers';
 import './config/passport';
 import config from './config/keys';
-import AuthRoutes from './routes/auth';
 
 const app = express();
 const PORT = process.env.PORT || config.PORT;
@@ -31,7 +30,6 @@ app.use(passport.initialize());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-app.use('/auth', AuthRoutes);
 
 app.get('/', (req, res) => responseSuccess(
   200,
@@ -40,7 +38,7 @@ app.get('/', (req, res) => responseSuccess(
   res
 ));
 
-routes(app);
+app.use(routes);
 
 app.use('*', (req, res) => responseError(
   404,

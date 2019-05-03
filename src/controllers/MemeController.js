@@ -88,6 +88,9 @@ class MemeController {
       });
       return responseSuccess(200, memeWall, 'Meme wall created successfully', res);
     } catch (error) {
+      if (error.code && error.code === 11000) {
+        return responseError(409, error, 'A meme wall with the same name already exists. Please use a different name', res);
+      }
       return responseError(500, error, 'Could not create the meme wall', res);
     }
   }

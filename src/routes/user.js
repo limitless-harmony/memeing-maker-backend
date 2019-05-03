@@ -1,6 +1,9 @@
+import { Router } from 'express';
 import UserController from '../controllers/UserController';
 
-export default (app) => {
-  // TODO: FLESH THIS OUT
-  app.get('/users', UserController.getUsers);
-};
+const router = Router();
+
+// TODO: FLESH THIS OUT
+router.get('/users', UserController.getUsers);
+
+export default router;
