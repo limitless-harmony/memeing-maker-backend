@@ -1,0 +1,21 @@
+{
+  "addons": [
+    "mongolab"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "name": "memeing-maker-backend",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
