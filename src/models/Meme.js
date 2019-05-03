@@ -16,11 +16,15 @@ const Meme = new Schema({
     type: String,
     required: 'A meme must have a name'
   },
-  user: {
+  creator: {
     type: Schema.Types.ObjectId,
     ref: 'User'
   },
   flagged: {
+    type: Number,
+    default: 0
+  },
+  reactions: {
     type: Number,
     default: 0
   },
