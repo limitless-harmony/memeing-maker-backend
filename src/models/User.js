@@ -1,7 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
 const User = new Schema({
-  id: Schema.ObjectId,
   name: {
     type: String,
   },
@@ -23,7 +22,9 @@ const User = new Schema({
   authProvider: {
     type: String,
   }
-}, { timestamps: true });
+}, {
+  timestamps: true,
+});
 
 User.index({ '$**': 'text' });
 
