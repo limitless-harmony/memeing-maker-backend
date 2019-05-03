@@ -47,11 +47,11 @@ class MemeController {
    * @return {Promise} a response object containing the just created meme.
    */
   static async createMeme(req, res) {
+    const { userId } = req.user;
     const {
       topText,
       bottomText,
       image,
-      creator,
       name,
     } = req.body;
 
@@ -60,7 +60,7 @@ class MemeController {
         topText,
         bottomText,
         image,
-        creator,
+        creator: userId,
         name,
       });
       return responseSuccess(201, meme, 'Meme created successfully', res);
@@ -76,16 +76,16 @@ class MemeController {
    * @return {Promise} a response object containing the just created meme.
    */
   static async createMemeWall(req, res) {
+    const { userId } = req.user;
     const {
       name,
-      creator,
       memes,
     } = req.body;
 
     try {
       const memeWall = await Wall.create({
         name,
-        creator,
+        creator: userId,
         memes,
       });
       return responseSuccess(201, memeWall, 'Meme wall created successfully', res);
@@ -96,7 +96,6 @@ class MemeController {
       return responseError(500, error, 'Could not create the meme wall', res);
     }
   }
-
 
   /**
    * Gets a meme wall
@@ -200,7 +199,7 @@ class MemeController {
    */
   static async flagAMeme(req, res) {
     const { memeId } = req.params;
-    const { id: userId } = req.user;
+    const { userId } = req.user;
     if (!isValidId(memeId)) return responseError(400, {}, 'Please provide a valid meme ID', res);
 
     try {

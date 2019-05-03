@@ -3,12 +3,15 @@ import { Router } from 'express';
 import MemeController from '../controllers/MemeController';
 import saveImage from '../middlewares/aws';
 import { validateMeme } from '../middlewares/validators';
+import { isLoggedIn } from '../middlewares/auth';
 
 const router = Router();
 
-router.get('/', MemeController.getMemes);
-router.post('/', validateMeme, saveImage, MemeController.createMeme);
 router.get('/featured', MemeController.getFeaturedMemes);
-router.put('/:memeId/react', MemeController.reactToMeme);
+
+router.get('/', isLoggedIn, MemeController.getMemes);
+router.post('/', isLoggedIn, validateMeme, saveImage, MemeController.createMeme);
+router.put('/:memeId/react', isLoggedIn, MemeController.reactToMeme);
+router.put('/:memeId/flag', isLoggedIn, MemeController.flagAMeme);
 
 export default router;
