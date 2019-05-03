@@ -8,6 +8,14 @@ class Token {
     const { id } = user;
     return jwt.sign({ id, expiresIn }, secret);
   }
+
+  static verify(token) {
+    try {
+      return jwt.verify(token, secret);
+    } catch (error) {
+      return null;
+    }
+  }
 }
 
 export default Token;
