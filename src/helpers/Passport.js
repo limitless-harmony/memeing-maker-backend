@@ -16,10 +16,16 @@ export const google = async (accessToken, refreshToken, profile, done) => {
     email,
   });
 
-  if (exisitingUser) return done(null, { token: Token.sign(exisitingUser) });
+  if (exisitingUser) return done(null, { 
+    userId: exisitingUser._id,
+    token: Token.sign(exisitingUser)
+  });
 
   const newlyCreatedUser = await newUser.save();
-  return done(null, { token: Token.sign(newlyCreatedUser) });
+  return done(null, { 
+    userId: newlyCreatedUser._id,
+    token: Token.sign(newlyCreatedUser)
+  });
 };
 
 export const linkedin = async (accessToken, refreshToken, profile, done) => {
@@ -36,10 +42,17 @@ export const linkedin = async (accessToken, refreshToken, profile, done) => {
     imageUrl,
     email,
   });
-  if (exisitingUser) return done(null, { token: Token.sign(exisitingUser) });
+
+  if (exisitingUser) return done(null, { 
+    userId: exisitingUser._id,
+    token: Token.sign(exisitingUser)
+  });
 
   const newlyCreatedUser = await newUser.save();
-  return done(null, { token: Token.sign(newlyCreatedUser) });
+  return done(null, {
+    userId: newlyCreatedUser._id,
+    token: Token.sign(newlyCreatedUser)
+  });
 };
 
 export const facebook = async (accessToken, refreshToken, profile, done) => {
@@ -56,8 +69,14 @@ export const facebook = async (accessToken, refreshToken, profile, done) => {
     imageUrl: `https://graph.facebook.com/${facebookId}/picture?type=large`,
     email,
   });
-  if (exisitingUser) return done(null, { token: Token.sign(exisitingUser) });
+  if (exisitingUser) return done(null, {
+    userId: exisitingUser._id,
+    token: Token.sign(exisitingUser)
+   });
 
   const newlyCreatedUser = await newUser.save();
-  return done(null, { token: Token.sign(newlyCreatedUser) });
+  return done(null, {
+    userId: newlyCreatedUser._id,
+    token: Token.sign(newlyCreatedUser)
+   });
 };
