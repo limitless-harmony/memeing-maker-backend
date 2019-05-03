@@ -1,5 +1,5 @@
 import User from '../models/User';
-import { responseError, responseSuccess } from '../helpers/responses';
+import { responseError, responseSuccess } from '../helpers';
 
 /**
  * [UserController description]

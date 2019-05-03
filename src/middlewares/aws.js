@@ -1,6 +1,6 @@
 import uuidv4 from 'uuid/v4';
 import aws from 'aws-sdk';
-import { responseError } from '../helpers/responses';
+import { responseError } from '../helpers';
 
 const {
   AWS_ACCESS_KEY_ID,
