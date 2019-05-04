@@ -2,7 +2,7 @@ import Token from './Token';
 import User from '../models/User';
 
 export const google = async (accessToken, refreshToken, profile, done) => {
-  const exisitingUser = await User.findOne({ googleId: profile.id });
+  const existingUser = await User.findOne({ googleId: profile.id });
 
   const {
     sub: googleId, name, picture: imageUrl, email
@@ -16,20 +16,22 @@ export const google = async (accessToken, refreshToken, profile, done) => {
     email,
   });
 
-  if (exisitingUser) return done(null, { 
-    userId: exisitingUser._id,
-    token: Token.sign(exisitingUser)
-  });
+  if (existingUser) {
+    return done(null, {
+      userId: existingUser._id,
+      token: Token.sign(existingUser)
+    });
+  }
 
   const newlyCreatedUser = await newUser.save();
-  return done(null, { 
+  return done(null, {
     userId: newlyCreatedUser._id,
     token: Token.sign(newlyCreatedUser)
   });
 };
 
 export const linkedin = async (accessToken, refreshToken, profile, done) => {
-  const exisitingUser = await User.findOne({ linkedinId: profile.id });
+  const existingUser = await User.findOne({ linkedinId: profile.id });
 
   const {
     id: linkedinId, formattedName: name, pictureUrl: imageUrl, emailAddress: email
@@ -43,10 +45,12 @@ export const linkedin = async (accessToken, refreshToken, profile, done) => {
     email,
   });
 
-  if (exisitingUser) return done(null, { 
-    userId: exisitingUser._id,
-    token: Token.sign(exisitingUser)
-  });
+  if (existingUser) {
+    return done(null, {
+      userId: existingUser._id,
+      token: Token.sign(existingUser)
+    });
+  }
 
   const newlyCreatedUser = await newUser.save();
   return done(null, {
@@ -56,7 +60,7 @@ export const linkedin = async (accessToken, refreshToken, profile, done) => {
 };
 
 export const facebook = async (accessToken, refreshToken, profile, done) => {
-  const exisitingUser = await User.findOne({ facebookId: profile.id });
+  const existingUser = await User.findOne({ facebookId: profile.id });
 
   const {
     id: facebookId, email, first_name: firstname, last_name: lastname
@@ -69,14 +73,16 @@ export const facebook = async (accessToken, refreshToken, profile, done) => {
     imageUrl: `https://graph.facebook.com/${facebookId}/picture?type=large`,
     email,
   });
-  if (exisitingUser) return done(null, {
-    userId: exisitingUser._id,
-    token: Token.sign(exisitingUser)
-   });
+  if (existingUser) {
+    return done(null, {
+      userId: existingUser._id,
+      token: Token.sign(existingUser)
+    });
+  }
 
   const newlyCreatedUser = await newUser.save();
   return done(null, {
     userId: newlyCreatedUser._id,
     token: Token.sign(newlyCreatedUser)
-   });
+  });
 };
