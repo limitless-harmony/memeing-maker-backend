@@ -70,6 +70,61 @@ class MemeController {
   }
 
   /**
+   * Reacts to a meme
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing an array of found memes
+   */
+  static async reactToMeme(req, res) {
+    const { reactions } = req.body;
+    const { memeId } = req.params;
+    if (!isValidId(memeId)) return responseError(400, {}, 'Please provide a valid meme ID', res);
+    const castReactions = reactions | 0;
+    if (!castReactions) return responseError(400, {}, 'Reactions must be a number', res);
+    try {
+      const updatedMeme = await Meme.findOneAndUpdate(
+        { _id: memeId },
+        { $inc: { reactions: castReactions } },
+        { new: true }
+      );
+      if (!updatedMeme) return responseError(404, {}, 'Oops, looks like this meme does not exist!', res);
+      const { creator } = updatedMeme;
+      await User.findOneAndUpdate(
+        { _id: creator },
+        { $inc: { reactions: castReactions } },
+        { new: true }
+      );
+      return responseSuccess(200, updatedMeme, 'You have successfully reacted to this meme', res);
+    } catch (error) {
+      return responseError(500, error, error.message, res);
+    }
+  }
+
+  /**
+   * Flags a meme
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing an array of found memes
+   */
+  static async flagAMeme(req, res) {
+    const { memeId } = req.params;
+    const { userId } = req.user;
+    if (!isValidId(memeId)) return responseError(400, {}, 'Please provide a valid meme ID', res);
+
+    try {
+      const flaggedMeme = await Meme.findOneAndUpdate(
+        { _id: memeId },
+        { $addToSet: { flagged: userId } },
+        { new: true }
+      );
+      if (!flaggedMeme) return responseError(404, {}, 'Oops, looks like this meme does not exist!', res);
+      return responseSuccess(200, flaggedMeme, 'You have successfully flagged this meme', res);
+    } catch (error) {
+      return responseError(500, error, error.message, res);
+    }
+  }
+
+  /**
    * creates a meme wall in the database
    * @param {Object} req the request object
    * @param {Object} res the response object
@@ -108,7 +163,7 @@ class MemeController {
     if (!isValidId(id)) return responseError(400, {}, 'Please provide a valid meme ID', res);
     try {
       const memeWall = await Wall.findOne({ _id: id }).populate('memes');
-      if (!memeWall) return responseError(404, {}, 'The meme wall you are looking for, does not exist', res);
+      if (!memeWall) return responseError(404, {}, 'Oops, looks like this meme wall does not exist!', res);
       return responseSuccess(200, memeWall, 'meme wall fetched successfully', res);
     } catch (error) {
       return responseError(500, error, 'Could not fetch meme wall', res);
@@ -132,6 +187,7 @@ class MemeController {
         { $addToSet: { memes: memeId } },
         { new: true }
       );
+      if (!updatedMemeWall) return responseError(404, {}, 'Oops, looks like this meme wall does not exist!', res);
       return responseSuccess(200, updatedMemeWall, 'meme added to wall successfully', res);
     } catch (error) {
       return responseError(500, error, error.message, res);
@@ -155,60 +211,8 @@ class MemeController {
         { $pull: { memes: memeId } },
         { new: true }
       );
+      if (!updatedMemeWall) return responseError(404, {}, 'Oops, looks like this meme wall does not exist!', res);
       return responseSuccess(200, updatedMemeWall, 'meme removed from wall successfully', res);
-    } catch (error) {
-      return responseError(500, error, error.message, res);
-    }
-  }
-
-  /**
-   * Reacts to a meme
-   * @param {Object} req the request object
-   * @param {Object} res the response object
-   * @return {Promise} a response object containing an array of found memes
-   */
-  static async reactToMeme(req, res) {
-    const { reactions } = req.body;
-    const { memeId } = req.params;
-    if (!isValidId(memeId)) return responseError(400, {}, 'Please provide a valid meme ID', res);
-    const castReactions = reactions | 0;
-    if (!castReactions) return responseError(400, {}, 'Reactions must be a number', res);
-    try {
-      const updatedMeme = await Meme.findOneAndUpdate(
-        { _id: memeId },
-        { $inc: { reactions: castReactions } },
-        { new: true }
-      );
-      const { creator } = updatedMeme;
-      await User.findOneAndUpdate(
-        { _id: creator },
-        { $inc: { reactions: castReactions } },
-        { new: true }
-      );
-      return responseSuccess(200, updatedMeme, 'You have successfully reacted to this meme', res);
-    } catch (error) {
-      return responseError(500, error, error.message, res);
-    }
-  }
-
-  /**
-   * Flags a meme
-   * @param {Object} req the request object
-   * @param {Object} res the response object
-   * @return {Promise} a response object containing an array of found memes
-   */
-  static async flagAMeme(req, res) {
-    const { memeId } = req.params;
-    const { userId } = req.user;
-    if (!isValidId(memeId)) return responseError(400, {}, 'Please provide a valid meme ID', res);
-
-    try {
-      const flaggedMeme = await Meme.findOneAndUpdate(
-        { _id: memeId },
-        { $addToSet: { flagged: userId } },
-        { new: true }
-      );
-      return responseSuccess(200, flaggedMeme, 'You have successfully reacted to this meme', res);
     } catch (error) {
       return responseError(500, error, error.message, res);
     }
