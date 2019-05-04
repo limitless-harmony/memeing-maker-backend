@@ -10,7 +10,6 @@ const Meme = new Schema({
   },
   image: {
     type: String,
-    required: 'Please select a meme image first'
   },
   name: {
     type: String,

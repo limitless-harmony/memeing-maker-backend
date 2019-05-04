@@ -29,10 +29,6 @@ const User = new Schema({
     enum: ['Player', 'Facilitator', 'Admin'],
     default: 'Player',
   },
-  reactions: {
-    type: Number,
-    default: 0
-  },
 }, { timestamps: true });
 
 User.index({ '$**': 'text' });

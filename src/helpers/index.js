@@ -8,15 +8,8 @@ export const trim = (body) => {
   });
   return trimmed;
 };
-
-export const responseError = (code, error, message, res) => res.status(code).json({
-  code,
-  error,
-  message
-});
-
 export const responseSuccess = (code, data, message, res) => res.status(code).json({
-  code,
+  status: 'success',
   data,
   message
 });
@@ -38,3 +31,5 @@ export const checkRequired = (body, requiredFields) => {
 };
 
 export const isValidId = id => Types.ObjectId.isValid(id);
+
+export const sentenceCase = sentence => `${sentence[0].toUpperCase()}${sentence.substr(1)}`;

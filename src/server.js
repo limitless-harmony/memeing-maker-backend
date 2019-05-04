@@ -6,9 +6,11 @@ import passport from 'passport';
 
 import logger from 'console';
 import routes from './routes';
-import { responseSuccess, responseError } from './helpers';
+import { responseSuccess } from './helpers';
 import './config/passport';
 import config from './config/keys';
+import tryCatch from './helpers/try-catch';
+import ApplicationError from './helpers/Error';
 
 const app = express();
 const PORT = process.env.PORT || config.PORT;
@@ -38,15 +40,17 @@ app.get('/', (req, res) => responseSuccess(
   res
 ));
 
-app.use(routes);
+app.use(tryCatch(routes));
 
-app.use('*', (req, res) => responseError(
-  404,
-  {},
-  "It looks like the route you requested didn't exist. Please check the url and try again",
-  res
-));
+app.use('*', (req, res, next) => {
+  const message = "It looks like the route you requested doesn't exist. Please check the url and try again";
+  throw new ApplicationError(message, 404);
+});
 
+app.use((err, req, res, next) => {
+  err.status = 'error';
+  res.status(err.code).json(err);
+});
 
 app.listen(PORT, () => logger.log(`Listening on ${PORT}!`));
 
