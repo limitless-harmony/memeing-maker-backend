@@ -8,17 +8,6 @@ import ApplicationError from '../helpers/Error';
  */
 class UserController {
   /**
-   * [getUsers description]
-   * @param  {[type]}  req [description]
-   * @param  {[type]}  res [description]
-   * @return {Promise}     [description]
-   */
-  static async getUsers(req, res) {
-    const users = await User.find();
-    return responseSuccess(200, users, 'users found', res);
-  }
-
-  /**
    * Gets the profile of a user
    * @param {Object} req the request object
    * @param {Object} res the response object

@@ -1,57 +1,25 @@
 import 'dotenv/config';
-import cors from 'cors';
-import express from 'express';
-import mongoose from 'mongoose';
-import passport from 'passport';
+import logger from './helpers/logger';
 
-import logger from 'console';
-import routes from './routes';
-import { responseSuccess } from './helpers';
-import './config/passport';
-import config from './config/keys';
-import tryCatch from './helpers/try-catch';
-import ApplicationError from './helpers/Error';
-
-const app = express();
-const PORT = process.env.PORT || config.PORT;
-
-mongoose.Promise = global.Promise;
-
-// DB CONNECTION INSTANCE
-const dbUrl = process.env.MONGODB_URI || 'mongodb://localhost/MemeMakerDB';
-mongoose.connect(dbUrl, {
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useNewUrlParser: true
-})
-  .then(() => logger.log('Connection to mongodb successful'))
-  .catch(error => logger.log('Unable to connect', error));
-
-app.use(cors());
-app.use(passport.initialize());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
+import app from './app';
 
 
-app.get('/', (req, res) => responseSuccess(
-  200,
-  {},
-  'Welcome to Memeing Maker. Make meaning. Share memes',
-  res
-));
-
-app.use(tryCatch(routes));
-
-app.use('*', (req, res, next) => {
-  const message = "It looks like the route you requested doesn't exist. Please check the url and try again";
-  throw new ApplicationError(message, 404);
+const server = app.listen(app.get('port'), () => {
+  logger.info(
+    `App is running at http://localhost:${app.get('port')} in ${app.get('env')} mode`
+  );
 });
 
-app.use((err, req, res, next) => {
-  err.status = 'error';
-  res.status(err.code).json(err);
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    logger.debug('Address in use, closing...');
+    setTimeout(() => {
+      server.close();
+    }, 1000);
+  } else {
+    logger.log('here');
+    logger.debug(err.code, err);
+  }
 });
 
-app.listen(PORT, () => logger.log(`Listening on ${PORT}!`));
-
-export default app;
+export default server;
