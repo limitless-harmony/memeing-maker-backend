@@ -25,6 +25,7 @@
     "@babel/plugin-syntax-object-rest-spread": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.4.3",
     "@babel/runtime": "^7.4.3",
+    "@sokratis/passport-linkedin-oauth2": "^2.0.2",
     "aws-sdk": "^2.441.0",
     "bluebird": "^3.5.3",
     "cors": "^2.8.5",

@@ -51,7 +51,10 @@ app.use('*', (req, res, next) => {
 
 app.use((err, req, res, next) => {
   err.status = 'error';
-  res.status(err.code).json(err);
+  if (!Number(err.code) || Number(err.code) > 600) {
+    err.code = 500;
+  }
+  res.status(err.code || 500).json(err);
 });
 
 export default app;

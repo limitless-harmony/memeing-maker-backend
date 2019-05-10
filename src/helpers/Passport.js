@@ -1,12 +1,25 @@
 import Token from './Token';
 import User from '../models/User';
 
-export const google = async (accessToken, refreshToken, profile, done) => {
-  const existingUser = await User.findOne({ googleId: profile.id });
+const findByEmail = async email => User.findOne({ email });
 
+const finishLogin = async (user, done) => {
+  const { _id: id, role } = user;
+  const token = await Token.sign(user);
+  return done(null, {
+    id,
+    role,
+    token,
+  });
+};
+export const google = async (accessToken, refreshToken, profile, done) => {
   const {
     sub: googleId, name, picture: imageUrl, email
   } = profile._json;
+
+  const existingUser = await findByEmail(email);
+
+  if (existingUser) return finishLogin(existingUser, done);
 
   const newUser = new User({
     authProvider: profile.provider,
@@ -16,26 +29,19 @@ export const google = async (accessToken, refreshToken, profile, done) => {
     email,
   });
 
-  if (existingUser) {
-    return done(null, {
-      userId: existingUser._id,
-      token: Token.sign(existingUser)
-    });
-  }
-
   const newlyCreatedUser = await newUser.save();
-  return done(null, {
-    userId: newlyCreatedUser._id,
-    token: Token.sign(newlyCreatedUser)
-  });
+  return finishLogin(newlyCreatedUser, done);
 };
 
 export const linkedin = async (accessToken, refreshToken, profile, done) => {
-  const existingUser = await User.findOne({ linkedinId: profile.id });
-
   const {
-    id: linkedinId, formattedName: name, pictureUrl: imageUrl, emailAddress: email
-  } = profile._json;
+    id: linkedinId, displayName: name, photos, emails
+  } = profile;
+  const imageUrl = photos[0].value;
+  const email = emails[0].value;
+  const existingUser = await findByEmail(email);
+
+  if (existingUser) return finishLogin(existingUser, done);
 
   const newUser = new User({
     authProvider: profile.provider,
@@ -45,44 +51,27 @@ export const linkedin = async (accessToken, refreshToken, profile, done) => {
     email,
   });
 
-  if (existingUser) {
-    return done(null, {
-      userId: existingUser._id,
-      token: Token.sign(existingUser)
-    });
-  }
-
   const newlyCreatedUser = await newUser.save();
-  return done(null, {
-    userId: newlyCreatedUser._id,
-    token: Token.sign(newlyCreatedUser)
-  });
+  return finishLogin(newlyCreatedUser, done);
 };
 
 export const facebook = async (accessToken, refreshToken, profile, done) => {
-  const existingUser = await User.findOne({ facebookId: profile.id });
-
   const {
-    id: facebookId, email, first_name: firstname, last_name: lastname
+    id: facebookId, email, first_name: firstName, last_name: lastName
   } = profile._json;
+
+  const existingUser = await findByEmail(email);
+
+  if (existingUser) return finishLogin(existingUser, done);
 
   const newUser = new User({
     authProvider: profile.provider,
     facebookId,
-    name: `${firstname} ${lastname}`,
+    name: `${firstName} ${lastName}`,
     imageUrl: `https://graph.facebook.com/${facebookId}/picture?type=large`,
     email,
   });
-  if (existingUser) {
-    return done(null, {
-      userId: existingUser._id,
-      token: Token.sign(existingUser)
-    });
-  }
 
   const newlyCreatedUser = await newUser.save();
-  return done(null, {
-    userId: newlyCreatedUser._id,
-    token: Token.sign(newlyCreatedUser)
-  });
+  return finishLogin(newlyCreatedUser, done);
 };

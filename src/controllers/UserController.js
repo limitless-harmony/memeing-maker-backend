@@ -22,6 +22,16 @@ class UserController {
     const data = { ...profile._doc, memes };
     return responseSuccess(200, data, 'User Profile fetched successfully', res);
   }
+
+  /**
+   * Gets the profile of a user
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing the user profile.
+   */
+  static async loginSuccess(req, res) {
+    return responseSuccess(200, req.user, 'You have ', res);
+  }
 }
 
 export default UserController;

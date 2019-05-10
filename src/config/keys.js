@@ -1,25 +1,26 @@
+const { env } = process;
 export default {
   PORT: 4001,
   google: {
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/auth/google/success',
+    clientID: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+    callbackURL: env.GOOGLE_CLIENT_CALLBACK_URL,
   },
   linkedIn: {
-    clientID: process.env.LINKEDIN_CLIENT_ID,
-    clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-    callbackURL: '/auth/linkedin/success',
+    clientID: env.LINKEDIN_CLIENT_ID,
+    clientSecret: env.LINKEDIN_CLIENT_SECRET,
+    callbackURL: env.LINKEDIN_CLIENT_CALLBACK_URL,
   },
   facebook: {
-    clientID: process.env.FACEBOOK_APP_ID,
-    clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: '/auth/facebook/success',
+    clientID: env.FACEBOOK_APP_ID,
+    clientSecret: env.FACEBOOK_APP_SECRET,
+    callbackURL: env.FACEBOOK_CLIENT_CALLBACK_URL,
   },
   jwt: {
-    secret: process.env.JWT_SECRET,
-    expiresIn: process.env.JWT_EXPIRY,
+    secret: env.JWT_SECRET,
+    expiresIn: env.JWT_EXPIRY,
   },
   mongodb: {
-    dbURI: process.env.MONGO_URI,
+    dbURI: env.MONGO_URI,
   }
 };
