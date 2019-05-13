@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 const Meme = new Schema({
   id: Schema.ObjectId,
@@ -34,6 +35,7 @@ const Meme = new Schema({
 
 }, { timestamps: true });
 
+Meme.plugin(paginate);
 // Add full text search
 Meme.index({ '$**': 'text' });
 

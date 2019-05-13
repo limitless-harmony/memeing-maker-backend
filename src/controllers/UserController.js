@@ -30,7 +30,7 @@ class UserController {
    * @return {Promise} a response object containing the user profile.
    */
   static async loginSuccess(req, res) {
-    return responseSuccess(200, req.user, 'You have ', res);
+    return responseSuccess(200, req.user, 'You have successfully logged in!', res);
   }
 }
 

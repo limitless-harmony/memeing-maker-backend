@@ -8,12 +8,12 @@ export const trim = (body) => {
   });
   return trimmed;
 };
-export const responseSuccess = (code, data, message, res) => res.status(code).json({
+
+export const responseSuccess = async (code, data, message, res) => res.status(code).json({
   status: 'success',
   data,
   message
 });
-
 export const checkRequired = (body, requiredFields) => {
   // Removes empty spaces
   const inputs = trim(body);
