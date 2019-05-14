@@ -11,6 +11,6 @@ const router = Router();
 router.use('/users', user);
 router.use('/memes', meme);
 router.use('/auth', auth);
-router.use('/meme-walls', isLoggedIn, wall);
+router.use('/walls', isLoggedIn, wall);
 
 export default router;

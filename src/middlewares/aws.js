@@ -18,7 +18,7 @@ const saveImage = async (req, res, next) => {
   const base64Data = req.body.image;
   const S3 = new aws.S3();
   const name = uuidv4();
-  if (!base64Data) {
+  if (!base64Data.includes('data:image/png;base64')) {
     req.body.name = name;
     return next();
   }

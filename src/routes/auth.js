@@ -1,28 +1,23 @@
 import { Router } from 'express';
 import passport from 'passport';
 
-import Auth from '../controllers/Auth';
-import { isLoggedIn } from '../middlewares/auth';
+import UserController from '../controllers/UserController';
 
 const router = Router();
 
 router.route('/google')
   .get(passport.authenticate('google'));
 router.route('/google/success')
-  .get(passport.authenticate('google', { session: false }), Auth.loginSuccess);
+  .get(passport.authenticate('google', { session: false }), UserController.loginSuccess);
 
 router.route('/linkedin')
   .get(passport.authenticate('linkedin'));
 router.route('/linkedin/success')
-  .get(passport.authenticate('linkedin', { session: false }), Auth.loginSuccess);
+  .get(passport.authenticate('linkedin', { session: false }), UserController.loginSuccess);
 
 router.route('/facebook')
   .get(passport.authenticate('facebook'));
 router.route('/facebook/success')
-  .get(passport.authenticate('facebook', { session: false }), Auth.loginSuccess);
-
-// Testing the middleware
-router.route('/protected')
-  .get(isLoggedIn, (req, res) => res.status(200).json(req.user));
+  .get(passport.authenticate('facebook', { session: false }), UserController.loginSuccess);
 
 export default router;

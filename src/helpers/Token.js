@@ -4,12 +4,12 @@ import keys from '../config/keys';
 const { secret, expiresIn } = keys.jwt;
 
 class Token {
-  static sign(user) {
-    const { id } = user;
-    return jwt.sign({ id, expiresIn }, secret);
+  static async sign(user) {
+    const { id, role } = user;
+    return jwt.sign({ id, role, expiresIn }, secret);
   }
 
-  static verify(token) {
+  static async verify(token) {
     try {
       return jwt.verify(token, secret);
     } catch (error) {

@@ -16,7 +16,16 @@ class MemeController {
    * @return {Promise} a response object containing an array of memes
    */
   static async getMemes(req, res, next) {
-    const memes = await Meme.find();
+    // const memes = await Meme.find();
+    const { page, limit } = req.query;
+    const options = {
+      page: page || 1,
+      limit: limit || 10,
+      lean: true,
+      sort: { createdAt: -1 },
+    };
+
+    const memes = await Meme.paginate({}, options);
     if (memes.length === 0) return next(new ApplicationError('No memes available', 404));
     return responseSuccess(200, memes, 'Memes fetched successfully', res);
   }
@@ -29,7 +38,7 @@ class MemeController {
    * @return {Promise} a response object containing an array of memes
    */
   static async getFeaturedMemes(req, res, next) {
-    const memes = await Meme.find({ featured: true });
+    const memes = await Meme.find({ featured: true }).lean();
     if (memes.length === 0) return next(new ApplicationError('No featured memes available', 404));
     return responseSuccess(200, memes, 'Featured memes fetched successfully', res);
   }
@@ -69,7 +78,7 @@ class MemeController {
   static async getAMeme(req, res, next) {
     const { memeId } = req.params;
     if (!isValidId(memeId)) return next(new ApplicationError('Please provide a valid meme ID', 400));
-    const meme = await Meme.findOne({ _id: memeId }).populate('creator');
+    const meme = await Meme.findOne({ _id: memeId }).lean().populate('creator');
     if (!meme) return next(new ApplicationError('Oops, looks like this meme does not exist!', 404));
     return responseSuccess(200, meme, 'Meme fetched successfully', res);
   }
@@ -146,9 +155,30 @@ class MemeController {
   static async getAMemeWall(req, res, next) {
     const { id } = req.params;
     if (!isValidId(id)) return next(new ApplicationError('Please provide a valid meme ID', 400));
-    const memeWall = await Wall.findOne({ _id: id }).populate('memes');
+    const memeWall = await Wall.findOne({ _id: id }).lean().populate('memes');
     if (!memeWall) return next(new ApplicationError('Oops, looks like this meme wall does not exist!', 404));
     return responseSuccess(200, memeWall, 'meme wall fetched successfully', res);
+  }
+
+  /**
+   * Gets all the available memes in the database
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @param {Object} next the next function
+   * @return {Promise} a response object containing an array of memes
+   */
+  static async getMemeWalls(req, res, next) {
+    const { page, limit } = req.query;
+    const options = {
+      page: page || 1,
+      limit: limit || 10,
+      lean: true,
+      sort: { createdAt: -1 },
+    };
+
+    const walls = await Wall.paginate({}, options);
+    if (walls.length === 0) return next(new ApplicationError('No meme walls available', 404));
+    return responseSuccess(200, walls, 'Meme walls fetched successfully', res);
   }
 
   /**

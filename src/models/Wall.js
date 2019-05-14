@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 const Wall = new Schema({
   name: {
@@ -17,6 +18,7 @@ const Wall = new Schema({
 
 }, { timestamps: true });
 
+Wall.plugin(paginate);
 // Add full text search
 Wall.index({ '$**': 'text' });
 
