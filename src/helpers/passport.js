@@ -1,7 +1,7 @@
 import Token from './Token';
 import User from '../models/User';
 
-const findByEmail = async email => User.findOne({ email });
+const findUserByProviderId = async (key, value) => User.findOne({ [key]: value });
 
 const finishLogin = async (user, done) => {
   const { _id: id, role } = user;
@@ -17,7 +17,7 @@ export const google = async (accessToken, refreshToken, profile, done) => {
     sub: googleId, name, picture: imageUrl, email
   } = profile._json;
 
-  const existingUser = await findByEmail(email);
+  const existingUser = await findUserByProviderId('googleId', googleId);
 
   if (existingUser) return finishLogin(existingUser, done);
 
@@ -39,7 +39,8 @@ export const linkedin = async (accessToken, refreshToken, profile, done) => {
   } = profile;
   const imageUrl = photos[0].value;
   const email = emails[0].value;
-  const existingUser = await findByEmail(email);
+
+  const existingUser = await findUserByProviderId('linkedInId', linkedinId);
 
   if (existingUser) return finishLogin(existingUser, done);
 
@@ -60,7 +61,7 @@ export const facebook = async (accessToken, refreshToken, profile, done) => {
     id: facebookId, email, first_name: firstName, last_name: lastName
   } = profile._json;
 
-  const existingUser = await findByEmail(email);
+  const existingUser = await findUserByProviderId('facebookId', facebookId);
 
   if (existingUser) return finishLogin(existingUser, done);
 
