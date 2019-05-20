@@ -4,7 +4,7 @@ import Meme from '../models/Meme';
 import ApplicationError from '../helpers/Error';
 
 /**
- * [UserController description]
+ * The controller for user
  */
 class UserController {
   /**
