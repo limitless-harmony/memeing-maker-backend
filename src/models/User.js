@@ -7,7 +7,10 @@ const User = new Schema({
   email: {
     type: String,
     unique: true,
-    required: true,
+  },
+  username: {
+    type: String,
+    unique: true,
   },
   imageUrl: {
     type: String,
@@ -21,14 +24,15 @@ const User = new Schema({
   facebookId: {
     type: String,
   },
-  authProvider: {
-    type: String,
-  },
   role: {
     type: String,
     enum: ['Player', 'Facilitator', 'Admin'],
     default: 'Player',
   },
+  isComplete: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 User.index({ '$**': 'text' });
