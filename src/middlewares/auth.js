@@ -1,11 +1,16 @@
 import Token from '../helpers/Token';
+import ApplicationError from '../helpers/Error';
 
-const isLoggedIn = (req, res, next) => {
+const isLoggedIn = async (req, res, next) => {
   const token = req.get('x-access-token') || req.body['x-access-token'];
-  const user = Token.verify(token);
+
+  if (!token) {
+    return next(new ApplicationError('You must be logged in to access this!', 401));
+  }
+
+  const user = await Token.verify(token);
   if (!user) {
-    return res.status(401)
-      .json({ error: 'Invalid auth token' });
+    return next(new ApplicationError('Invalid Authentication token. Please Login!', 401));
   }
 
   req.user = { userId: user.id };
