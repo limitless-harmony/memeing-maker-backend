@@ -28,9 +28,7 @@ const finishLogin = async (user, updateData, done) => {
 };
 
 export const google = async (accessToken, refreshToken, profile, done) => {
-  const {
-    sub: googleId, name, picture: imageUrl, email
-  } = profile._json;
+  const { sub: googleId, name, picture: imageUrl, email } = profile._json;
 
   const existingUser = await findUserByProviderOrEmail('googleId', googleId, email);
 
@@ -48,9 +46,7 @@ export const google = async (accessToken, refreshToken, profile, done) => {
 };
 
 export const linkedin = async (accessToken, refreshToken, profile, done) => {
-  const {
-    id: linkedinId, displayName: name, photos, emails
-  } = profile;
+  const { id: linkedinId, displayName: name, photos, emails } = profile;
   const imageUrl = photos[0].value;
   const email = emails[0].value;
 
@@ -71,7 +67,10 @@ export const linkedin = async (accessToken, refreshToken, profile, done) => {
 
 export const facebook = async (accessToken, refreshToken, profile, done) => {
   const {
-    id: facebookId, email, first_name: firstName, last_name: lastName
+    id: facebookId,
+    email,
+    first_name: firstName,
+    last_name: lastName,
   } = profile._json;
   const name = `${firstName} ${lastName}`;
   const imageUrl = `https://graph.facebook.com/${facebookId}/picture?type=large`;

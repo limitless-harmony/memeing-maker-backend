@@ -12,6 +12,12 @@ const User = new Schema({
     type: String,
     unique: true,
   },
+  topText: {
+    type: String,
+  },
+  bottomText: {
+    type: String,
+  },
   imageUrl: {
     type: String,
   },
@@ -26,7 +32,7 @@ const User = new Schema({
   },
   role: {
     type: String,
-    enum: ['Player', 'Facilitator', 'Admin'],
+    enum: ['Player', 'Admin', 'SuperAdmin'],
     default: 'Player',
   },
   isComplete: {

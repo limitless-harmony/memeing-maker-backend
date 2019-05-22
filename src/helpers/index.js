@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-export const trim = (body) => {
+export const trim = body => {
   const trimmed = {};
   // Removes empty spaces
   Object.entries(body).forEach(([key, value]) => {
@@ -9,11 +9,12 @@ export const trim = (body) => {
   return trimmed;
 };
 
-export const responseSuccess = async (code, data, message, res) => res.status(code).json({
-  status: 'success',
-  data,
-  message
-});
+export const responseSuccess = async (code, data, message, res) =>
+  res.status(code).json({
+    status: 'success',
+    data,
+    message,
+  });
 export const checkRequired = (body, requiredFields) => {
   // Removes empty spaces
   const inputs = trim(body);
@@ -21,7 +22,7 @@ export const checkRequired = (body, requiredFields) => {
   let missingRequired = false;
 
   // Checks that all required fields are present
-  requiredFields.forEach((element) => {
+  requiredFields.forEach(element => {
     if (!(element in inputs)) {
       missingRequired = true;
       errors[element] = `${element} is required`;
@@ -32,4 +33,5 @@ export const checkRequired = (body, requiredFields) => {
 
 export const isValidId = id => Types.ObjectId.isValid(id);
 
-export const sentenceCase = sentence => `${sentence[0].toUpperCase()}${sentence.substr(1)}`;
+export const sentenceCase = sentence =>
+  `${sentence[0].toUpperCase()}${sentence.substr(1)}`;

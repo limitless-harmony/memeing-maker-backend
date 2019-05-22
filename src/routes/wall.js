@@ -2,13 +2,12 @@ import { Router } from 'express';
 
 import WallController from '../controllers/WallController';
 
-
 const router = Router();
 
-router.post('/', WallController.createMemeWall);
-router.get('/', WallController.getMemeWalls);
-router.get('/:id', WallController.getAMemeWall);
-router.put('/:wallId/:memeId', WallController.addToMemeWall);
-router.delete('/:wallId/:memeId', WallController.removeFromMemeWall);
+router.post('/', WallController.create);
+router.get('/', WallController.getMany);
+router.get('/:id', WallController.getOne);
+router.put('/:wallId/:memeId', WallController.addMeme);
+router.delete('/:wallId/:memeId', WallController.removeMeme);
 
 export default router;

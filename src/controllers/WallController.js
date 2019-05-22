@@ -14,16 +14,27 @@ export default class WallController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing the created meme wall.
    */
-  static async createMemeWall(req, res, next) {
+  static async create(req, res, next) {
     const { userId } = req.user;
     const { name } = req.body;
-    if (!name) return next(new ApplicationError('A meme wall requires a name. Please provide one.', 400));
+    if (!name)
+      return next(
+        new ApplicationError(
+          'A meme wall requires a name. Please provide one.',
+          400
+        )
+      );
 
     const memeWall = await Wall.create({
       name,
       creator: userId,
     });
-    return responseSuccess(201, memeWall, 'Meme wall created successfully', res);
+    return responseSuccess(
+      201,
+      memeWall,
+      'Meme wall created successfully',
+      res
+    );
   }
 
   /**
@@ -33,12 +44,26 @@ export default class WallController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing the fetched meme
    */
-  static async getAMemeWall(req, res, next) {
+  static async getOne(req, res, next) {
     const { id } = req.params;
-    if (!isValidId(id)) return next(new ApplicationError('Please provide a valid meme ID', 400));
-    const memeWall = await Wall.findOne({ _id: id }).lean().populate('memes');
-    if (!memeWall) return next(new ApplicationError('Oops, looks like this meme wall does not exist!', 404));
-    return responseSuccess(200, memeWall, 'meme wall fetched successfully', res);
+    if (!isValidId(id))
+      return next(new ApplicationError('Please provide a valid meme ID', 400));
+    const memeWall = await Wall.findOne({ _id: id })
+      .lean()
+      .populate('memes');
+    if (!memeWall)
+      return next(
+        new ApplicationError(
+          'Oops, looks like this meme wall does not exist!',
+          404
+        )
+      );
+    return responseSuccess(
+      200,
+      memeWall,
+      'meme wall fetched successfully',
+      res
+    );
   }
 
   /**
@@ -48,7 +73,7 @@ export default class WallController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing an array of memes
    */
-  static async getMemeWalls(req, res, next) {
+  static async getMany(req, res, next) {
     const { page, limit } = req.query;
     const options = {
       page: page || 1,
@@ -58,7 +83,8 @@ export default class WallController {
     };
 
     const walls = await Wall.paginate({}, options);
-    if (walls.length === 0) return next(new ApplicationError('No meme walls available', 404));
+    if (walls.length === 0)
+      return next(new ApplicationError('No meme walls available', 404));
     return responseSuccess(200, walls, 'Meme walls fetched successfully', res);
   }
 
@@ -69,18 +95,31 @@ export default class WallController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing the meme wall with the added meme
    */
-  static async addToMemeWall(req, res, next) {
+  static async addMeme(req, res, next) {
     const { wallId, memeId } = req.params;
     if (!isValidId(wallId) || !isValidId(memeId)) {
-      return next(new ApplicationError('Please provide valid meme and wall IDs', 400));
+      return next(
+        new ApplicationError('Please provide valid meme and wall IDs', 400)
+      );
     }
-    const updatedMemeWall = await Wall.findOneAndUpdate(
+    const updated = await Wall.findOneAndUpdate(
       { _id: wallId },
       { $addToSet: { memes: memeId } },
       { new: true }
     );
-    if (!updatedMemeWall) return next(new ApplicationError('Oops, looks like this meme wall does not exist!', 404));
-    return responseSuccess(200, updatedMemeWall, 'meme added to wall successfully', res);
+    if (!updated)
+      return next(
+        new ApplicationError(
+          'Oops, looks like this meme wall does not exist!',
+          404
+        )
+      );
+    return responseSuccess(
+      200,
+      updated,
+      'meme added to wall successfully',
+      res
+    );
   }
 
   /**
@@ -90,17 +129,30 @@ export default class WallController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing the meme wall
    */
-  static async removeFromMemeWall(req, res, next) {
+  static async removeMeme(req, res, next) {
     const { wallId, memeId } = req.params;
     if (!isValidId(wallId) || !isValidId(memeId)) {
-      return next(new ApplicationError('Please provide valid meme and wall IDs', 400));
+      return next(
+        new ApplicationError('Please provide valid meme and wall IDs', 400)
+      );
     }
-    const updatedMemeWall = await Wall.findOneAndUpdate(
+    const updated = await Wall.findOneAndUpdate(
       { _id: wallId },
       { $pull: { memes: memeId } },
       { new: true }
     );
-    if (!updatedMemeWall) return next(new ApplicationError('Oops, looks like this meme wall does not exist!', 404));
-    return responseSuccess(200, updatedMemeWall, 'meme removed from wall successfully', res);
+    if (!updated)
+      return next(
+        new ApplicationError(
+          'Oops, looks like this meme wall does not exist!',
+          404
+        )
+      );
+    return responseSuccess(
+      200,
+      updated,
+      'meme removed from wall successfully',
+      res
+    );
   }
 }
