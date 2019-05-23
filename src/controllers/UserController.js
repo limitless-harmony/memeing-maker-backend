@@ -1,5 +1,6 @@
 import User from '../models/User';
 import { responseSuccess, isValidId } from '../helpers';
+import Token from '../helpers/Token';
 import Meme from '../models/Meme';
 import ApplicationError from '../helpers/Error';
 
@@ -21,6 +22,32 @@ class UserController {
     const memes = await Meme.find({ creator: profile._id });
     const data = { ...profile._doc, memes };
     return responseSuccess(200, data, 'User Profile fetched successfully', res);
+  }
+
+  /**
+   * Update the user's email and username
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing the user profile.
+   */
+  static async updateUserData(req, res, next) {
+    const { username, email } = req.body;
+    const token = req.get('x-access-token') || req.body['x-access-token'];
+    // TODO: Move all validations to Joi
+    const isValidEmail = /^[^@]+@[^@]+\.[^@]+$/.test(email);
+    if (!isValidEmail) return next(new ApplicationError('Please provide a valid email', 400));
+    if (!username || username.length > 16) return next(new ApplicationError('Please provide a valid username', 400));
+    const decodedToken = Token.verify(token);
+    try {
+      const userUpdate = await User.findOneAndUpdate(
+        { id: decodedToken.id },
+        { username, email, isComplete: true },
+        { returnNewDocument: true },
+      );
+      if (userUpdate) return responseSuccess(200, userUpdate, 'User data updated successfully', res);
+    } catch (error) {
+      return next(new ApplicationError(error.message, 400));
+    }
   }
 
   /**

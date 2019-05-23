@@ -8,7 +8,7 @@ import { isLoggedIn } from '../middlewares/auth';
 
 const router = Router();
 
-router.use('/users', user);
+router.use('/users', isLoggedIn, user);
 router.use('/memes', meme);
 router.use('/auth', auth);
 router.use('/walls', isLoggedIn, wall);
