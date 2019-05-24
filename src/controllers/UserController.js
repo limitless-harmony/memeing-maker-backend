@@ -2,6 +2,7 @@ import User from '../models/User';
 import { responseSuccess, isValidId } from '../helpers';
 import Token from '../helpers/Token';
 import Meme from '../models/Meme';
+import Wall from '../models/Wall';
 import ApplicationError from '../helpers/Error';
 
 /**
@@ -24,7 +25,9 @@ class UserController {
         new ApplicationError('Oops, looks like this user does not exist!', 404)
       );
     const memes = await Meme.find({ creator: profile._id });
-    const data = { ...profile._doc, memes };
+    const reactions = memes.reduce((acc, value) => acc + value.reactions, 0);
+    const walls = await Wall.find({ creator: profile._id });
+    const data = { ...profile._doc, memes, walls, reactions };
     return responseSuccess(200, data, 'User Profile fetched successfully', res);
   }
 
