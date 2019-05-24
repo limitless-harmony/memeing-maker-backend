@@ -37,7 +37,7 @@ const saveImage = async (req, res, next) => {
     };
 
     S3.upload(params, (err, data) => {
-      if (err) throw new ApplicationError(err.message, 500, err);
+      if (err) throw new ApplicationError(err.message, 500);
       meme.image = data.Location;
       meme.name = data.key;
       req.meme = meme;

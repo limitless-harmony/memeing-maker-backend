@@ -1,6 +1,5 @@
 import User from '../models/User';
 import { responseSuccess, isValidId } from '../helpers';
-import Token from '../helpers/Token';
 import Meme from '../models/Meme';
 import Wall from '../models/Wall';
 import ApplicationError from '../helpers/Error';
@@ -32,29 +31,50 @@ class UserController {
   }
 
   /**
+   * Gets the profile of a user
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @return {Promise} a response object containing the user profile.
+   */
+  static async getText(req, res, next) {
+    const { email, username } = req.params;
+    const data = await User.findOne({ $or: [email, username] });
+
+    return responseSuccess(200, data, 'User Profile fetched successfully', res);
+  }
+
+  /**
    * Update the user's email and username
    * @param {Object} req the request object
    * @param {Object} res the response object
    * @return {Promise} a response object containing the user profile.
    */
   static async updateUserData(req, res, next) {
-    const { username, email } = req.body;
-    const token = req.get('x-access-token') || req.body['x-access-token'];
-    // TODO: Move all validations to Joi
-    const isValidEmail = /^[^@]+@[^@]+\.[^@]+$/.test(email);
-    if (!isValidEmail) return next(new ApplicationError('Please provide a valid email', 400));
-    if (!username || username.length > 16) return next(new ApplicationError('Please provide a valid username', 400));
-    const decodedToken = Token.verify(token);
-    try {
-      const userUpdate = await User.findOneAndUpdate(
-        { id: decodedToken.id },
-        { username, email, isComplete: true },
-        { returnNewDocument: true },
+    const { username, topText, bottomText } = req.body;
+    const { userId } = req.user;
+
+    if (!username || username.length > 16 || username.length < 3)
+      return next(
+        new ApplicationError(
+          'Please choose a unique username between 3 and 16 characters',
+          400
+        )
       );
-      if (userUpdate) return responseSuccess(200, userUpdate, 'User data updated successfully', res);
-    } catch (error) {
-      return next(new ApplicationError(error.message, 400));
-    }
+
+    const userUpdate = await User.findOneAndUpdate(
+      { _id: userId },
+      { username, topText, bottomText, isComplete: true },
+      { new: true }
+    );
+    if (!userUpdate)
+      return next(new ApplicationError('No such user found!', 404));
+
+    return responseSuccess(
+      200,
+      userUpdate,
+      'User data updated successfully',
+      res
+    );
   }
 
   /**

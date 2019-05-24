@@ -1,8 +1,10 @@
+import ApplicationError from './Error';
+
 const tryCatch = handler => async (req, res, next) => {
   try {
     await handler(req, res, next);
   } catch (error) {
-    throw error;
+    next(new ApplicationError(error.message, 500));
   }
 };
 

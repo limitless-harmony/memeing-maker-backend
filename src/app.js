@@ -9,7 +9,6 @@ import routes from './routes';
 import { responseSuccess } from './helpers';
 import './config/passport';
 import config from './config/keys';
-import tryCatch from './helpers/try-catch';
 import ApplicationError from './helpers/Error';
 
 const app = express();
@@ -44,7 +43,7 @@ app.get('/', (req, res) =>
   )
 );
 
-app.use(tryCatch(routes));
+app.use(routes);
 
 app.use('*', (req, res, next) => {
   const message =
