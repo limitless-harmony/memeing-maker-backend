@@ -3,7 +3,10 @@ import { linkedin } from '../helpers/passport';
 
 import config from '../config/keys';
 
-export default new LinkedInStrategy({
-  ...config.linkedIn,
-  scope: ['r_emailaddress', 'r_liteprofile'],
-}, linkedin);
+export default new LinkedInStrategy(
+  {
+    ...config.linkedIn,
+    scope: ['r_emailaddress', 'r_liteprofile'],
+  },
+  linkedin
+);

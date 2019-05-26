@@ -12,29 +12,34 @@ const {
 aws.config.update({
   region: AWS_REGION,
   accessKeyId: AWS_ACCESS_KEY_ID,
-  secretAccessKey: AWS_SECRET_ACCESS_KEY
+  secretAccessKey: AWS_SECRET_ACCESS_KEY,
 });
+
+// eslint-disable-next-line consistent-return
 const saveImage = async (req, res, next) => {
-  const base64Data = req.body.image;
+  const { data } = req;
+  const { image } = data;
   const S3 = new aws.S3();
-  const name = uuidv4();
-  if (!base64Data.includes('data:image/png;base64')) {
-    req.body.name = name;
-    return next();
-  }
-  const buf = Buffer.from(base64Data.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+  const key = uuidv4();
+  if (!image || !image.includes('data:image/png;base64')) return next();
+
+  const buf = Buffer.from(
+    image.replace(/^data:image\/\w+;base64,/, ''),
+    'base64'
+  );
   const params = {
     Bucket: AWS_S3_BUCKET,
-    Key: name,
+    Key: key,
     Body: buf,
     ContentType: 'image/png',
-    ACL: 'public-read'
+    ACL: 'public-read',
   };
-  await S3.upload(params, (err, data) => {
-    if (err) throw new ApplicationError(err.message, 500, err);
-    req.body.image = data.Location;
-    req.body.name = data.key;
-    next();
+
+  S3.upload(params, (err, response) => {
+    if (err) throw new ApplicationError(err.message, 500);
+    data.image = response.Location;
+    req.data = data;
+    return next();
   });
 };
 
