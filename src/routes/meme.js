@@ -10,9 +10,9 @@ const router = Router();
 router.get('/featured', tryCatch(MemeController.getFeaturedMemes));
 
 router.get('/', isLoggedIn, tryCatch(MemeController.getMany));
-router.get('/:memeId', isLoggedIn, tryCatch(MemeController.getAMeme));
-router.put('/:memeId/react', isLoggedIn, tryCatch(MemeController.reactToMeme));
-router.put('/:memeId/flag', isLoggedIn, tryCatch(MemeController.flagAMeme));
+router.get('/:memeId', isLoggedIn, tryCatch(MemeController.getOne));
+router.put('/:memeId/react', isLoggedIn, tryCatch(MemeController.react));
+router.put('/:memeId/flag', isLoggedIn, tryCatch(MemeController.flag));
 router.post(
   '/',
   isLoggedIn,

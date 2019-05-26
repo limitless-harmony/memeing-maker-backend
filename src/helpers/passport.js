@@ -7,12 +7,22 @@ const findUserByProviderOrEmail = async (provider, providerId, email) =>
   });
 
 const finishLogin = async (user, done) => {
-  const { _id: id, role, isComplete, topText, bottomText } = user;
+  const {
+    _id: id,
+    role,
+    username,
+    image,
+    isComplete,
+    topText,
+    bottomText,
+  } = user;
   const token = await Token.sign(user);
   return done(null, {
     id,
     role,
     token,
+    username,
+    image,
     isComplete,
     topText,
     bottomText,

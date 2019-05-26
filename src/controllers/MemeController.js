@@ -49,49 +49,42 @@ class MemeController {
   }
 
   /**
-   * creates a meme in the database
+   * Saves a meme in the database (new or an update)
    * @param {Object} req the request object
    * @param {Object} res the response object
    * @param {Object} next the next function
-   * @return {Promise} a response object containing the created meme.
+   * @return {Promise} a response object containing the created/updated meme.
    */
   static async save(req, res, next) {
-    const { meme, method, params } = req;
-    const { name, topText, bottomText, image, creator } = meme;
+    const { data, method, params } = req;
+    const { topText, bottomText, image, creator } = data;
 
-    let data = {};
+    let response = {};
     let code = 201;
     let message = 'Meme created successfully';
     if (method === 'POST') {
-      data = await Meme.create({
-        name,
+      response = await Meme.create({
         topText,
         bottomText,
         image,
         creator,
       });
     } else {
-      data = await Meme.findOneAndUpdate(
+      response = await Meme.findOneAndUpdate(
         { _id: params.memeId },
-        {
-          name,
-          topText,
-          bottomText,
-          image,
-        }
+        { topText, bottomText, image }
       );
       code = 200;
       message = 'Meme edited successfully';
     }
-    return responseSuccess(code, data, message, res);
+    return responseSuccess(code, response, message, res);
   }
 
   /**
-   * creates a meme in the database
+   * Prepares a meme to be created
    * @param {Object} req the request object
    * @param {Object} res the response object
    * @param {Object} next the next function
-   * @return {Promise} a response object containing the created meme.
    */
   static async create(req, res, next) {
     const { userId } = req.user;
@@ -102,16 +95,15 @@ class MemeController {
       image,
       creator: userId,
     };
-    req.meme = meme;
+    req.data = meme;
     next();
   }
 
   /**
-   * creates a meme in the database
+   * Prepares a meme to be edited
    * @param {Object} req the request object
    * @param {Object} res the response object
    * @param {Object} next the next function
-   * @return {Promise} a response object containing the created meme.
    */
   static async edit(req, res, next) {
     const { userId, isAdmin } = req.user;
@@ -122,8 +114,7 @@ class MemeController {
       meme.topText = topText;
       meme.bottomText = bottomText;
       meme.image = image;
-      req.action = 'edit';
-      req.meme = meme;
+      req.data = meme;
       return next();
     }
     return next(
@@ -138,7 +129,7 @@ class MemeController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing the fetched meme.
    */
-  static async getAMeme(req, res, next) {
+  static async getOne(req, res, next) {
     const { memeId } = req.params;
     if (!isValidId(memeId))
       return next(new ApplicationError('Please provide a valid meme ID', 400));
@@ -159,7 +150,7 @@ class MemeController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing the meme reacted to
    */
-  static async reactToMeme(req, res, next) {
+  static async react(req, res, next) {
     const { reactions } = req.body;
     const { memeId } = req.params;
     if (!isValidId(memeId))
@@ -191,7 +182,7 @@ class MemeController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing the flagged meme
    */
-  static async flagAMeme(req, res, next) {
+  static async flag(req, res, next) {
     const { memeId } = req.params;
     const { userId } = req.user;
     if (!isValidId(memeId))

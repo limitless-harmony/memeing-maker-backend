@@ -13,10 +13,6 @@ const Meme = new Schema(
     image: {
       type: String,
     },
-    name: {
-      type: String,
-      required: 'A meme must have a name',
-    },
     creator: {
       type: Schema.Types.ObjectId,
       ref: 'User',

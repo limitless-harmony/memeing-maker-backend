@@ -9,6 +9,48 @@ import ApplicationError from '../helpers/Error';
  */
 class UserController {
   /**
+   * Saves a user profile in the database (new or an update)
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @param {Object} next the next function
+   * @return {Promise} a response object containing the updated profile.
+   */
+  static async saveProfile(req, res, next) {
+    const { data, user } = req;
+    const response = await User.findOneAndUpdate({ _id: user.userId }, data, {
+      new: true,
+    });
+
+    if (!response)
+      return next(new ApplicationError('No such user found!', 404));
+
+    const {
+      _id: id,
+      role,
+      isComplete,
+      username,
+      image,
+      topText,
+      bottomText,
+    } = response;
+    const message = 'Profile edited successfully';
+    return responseSuccess(
+      200,
+      {
+        id,
+        role,
+        username,
+        image,
+        isComplete,
+        topText,
+        bottomText,
+      },
+      message,
+      res
+    );
+  }
+
+  /**
    * Gets the profile of a user
    * @param {Object} req the request object
    * @param {Object} res the response object
@@ -31,28 +73,12 @@ class UserController {
   }
 
   /**
-   * Gets the profile of a user
+   * Prepares the user data for profile update
    * @param {Object} req the request object
    * @param {Object} res the response object
-   * @return {Promise} a response object containing the user profile.
    */
-  static async getText(req, res, next) {
-    const { email, username } = req.params;
-    const data = await User.findOne({ $or: [email, username] });
-
-    return responseSuccess(200, data, 'User Profile fetched successfully', res);
-  }
-
-  /**
-   * Update the user's email and username
-   * @param {Object} req the request object
-   * @param {Object} res the response object
-   * @return {Promise} a response object containing the user profile.
-   */
-  static async updateUserData(req, res, next) {
-    const { username, topText, bottomText } = req.body;
-    const { userId } = req.user;
-
+  static async updateProfile(req, res, next) {
+    const { username, topText, bottomText, image } = req.body;
     if (!username || username.length > 16 || username.length < 3)
       return next(
         new ApplicationError(
@@ -60,21 +86,8 @@ class UserController {
           400
         )
       );
-
-    const userUpdate = await User.findOneAndUpdate(
-      { _id: userId },
-      { username, topText, bottomText, isComplete: true },
-      { new: true }
-    );
-    if (!userUpdate)
-      return next(new ApplicationError('No such user found!', 404));
-
-    return responseSuccess(
-      200,
-      userUpdate,
-      'User data updated successfully',
-      res
-    );
+    req.data = { username, topText, bottomText, image, isComplete: true };
+    return next();
   }
 
   /**

@@ -14,36 +14,33 @@ aws.config.update({
   accessKeyId: AWS_ACCESS_KEY_ID,
   secretAccessKey: AWS_SECRET_ACCESS_KEY,
 });
-const saveImage = async (req, res, next) => {
-  const { meme } = req;
-  const { image } = meme;
-  const S3 = new aws.S3();
-  const name = meme.name || uuidv4();
-  if (!image || !image.includes('data:image/png;base64')) {
-    meme.name = name;
-    req.meme = meme;
-    next();
-  } else {
-    const buf = Buffer.from(
-      image.replace(/^data:image\/\w+;base64,/, ''),
-      'base64'
-    );
-    const params = {
-      Bucket: AWS_S3_BUCKET,
-      Key: name,
-      Body: buf,
-      ContentType: 'image/png',
-      ACL: 'public-read',
-    };
 
-    S3.upload(params, (err, data) => {
-      if (err) throw new ApplicationError(err.message, 500);
-      meme.image = data.Location;
-      meme.name = data.key;
-      req.meme = meme;
-      next();
-    });
-  }
+// eslint-disable-next-line consistent-return
+const saveImage = async (req, res, next) => {
+  const { data } = req;
+  const { image } = data;
+  const S3 = new aws.S3();
+  const key = uuidv4();
+  if (!image || !image.includes('data:image/png;base64')) return next();
+
+  const buf = Buffer.from(
+    image.replace(/^data:image\/\w+;base64,/, ''),
+    'base64'
+  );
+  const params = {
+    Bucket: AWS_S3_BUCKET,
+    Key: key,
+    Body: buf,
+    ContentType: 'image/png',
+    ACL: 'public-read',
+  };
+
+  S3.upload(params, (err, response) => {
+    if (err) throw new ApplicationError(err.message, 500);
+    data.image = response.Location;
+    req.data = data;
+    return next();
+  });
 };
 
 export default saveImage;
