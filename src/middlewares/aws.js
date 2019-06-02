@@ -21,8 +21,13 @@ const saveImage = async (req, res, next) => {
   const { image } = data;
   const S3 = new aws.S3();
   const key = uuidv4();
-  if (!image || !image.includes('data:image/png;base64')) return next();
+  if (
+    !image ||
+    (!image.includes('data:image/png;base64') && !image.includes('http'))
+  )
+    return next(new ApplicationError('Please select an image first!', 400));
 
+  if (image.includes('http')) return next();
   const buf = Buffer.from(
     image.replace(/^data:image\/\w+;base64,/, ''),
     'base64'
