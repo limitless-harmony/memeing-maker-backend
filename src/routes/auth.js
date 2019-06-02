@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
 
-import UserController from '../controllers/UserController';
+import ProfileController from '../controllers/ProfileController';
 import tryCatch from '../helpers/try-catch';
 
 const router = Router();
@@ -11,7 +11,7 @@ router
   .route('/google/success')
   .get(
     passport.authenticate('google', { session: false }),
-    tryCatch(UserController.loginSuccess)
+    tryCatch(ProfileController.finishLogin)
   );
 
 router.route('/linkedin').get(passport.authenticate('linkedin'));
@@ -19,7 +19,7 @@ router
   .route('/linkedin/success')
   .get(
     passport.authenticate('linkedin', { session: false }),
-    tryCatch(UserController.loginSuccess)
+    tryCatch(ProfileController.finishLogin)
   );
 
 router.route('/facebook').get(passport.authenticate('facebook'));
@@ -27,7 +27,7 @@ router
   .route('/facebook/success')
   .get(
     passport.authenticate('facebook', { session: false }),
-    tryCatch(UserController.loginSuccess)
+    tryCatch(ProfileController.finishLogin)
   );
 
 export default router;

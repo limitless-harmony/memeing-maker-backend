@@ -36,6 +36,10 @@ const User = new Schema(
       enum: ['Player', 'Admin', 'SuperAdmin'],
       default: 'Player',
     },
+    reactions: {
+      type: Number,
+      default: 0,
+    },
     isComplete: {
       type: Boolean,
       default: false,

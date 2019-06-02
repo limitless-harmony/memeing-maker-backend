@@ -36,7 +36,7 @@ class MemeController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing an array of memes
    */
-  static async getFeaturedMemes(req, res, next) {
+  static async getFeatured(req, res, next) {
     const memes = await Meme.find({ featured: true }).lean();
     if (memes.length === 0)
       return next(new ApplicationError('No featured memes available', 404));
