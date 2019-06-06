@@ -5,13 +5,13 @@ import saveImage from '../middlewares/aws';
 
 const router = Router();
 
-router.get('/:userId', tryCatch(ProfileController.get));
+router.get('/:id', tryCatch(ProfileController.get));
 router.put(
   '/',
   tryCatch(ProfileController.update),
   tryCatch(saveImage),
   tryCatch(ProfileController.save)
 );
-router.put('/:userId/react', tryCatch(ProfileController.react));
+router.put('/:id/react', tryCatch(ProfileController.react));
 
 export default router;
