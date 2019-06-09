@@ -13,15 +13,16 @@ const isLoggedIn = async (req, res, next) => {
   const user = await Token.verify(token);
   if (!user) {
     return next(
-      new ApplicationError('Invalid Authentication token. Please Login!', 401)
+      new ApplicationError(
+        'Invalid Authentication token. Please Login again!',
+        401
+      )
     );
   }
 
   const isAdmin = user.role === 'Admin' || user.role === 'SuperAdmin';
-  req.user = { userId: user.id, isAdmin };
+  req.user = { id: user.id, isAdmin };
   return next();
 };
 
-const isAuthorized = (req, res, next) => next();
-
-export { isLoggedIn, isAuthorized };
+export default isLoggedIn;

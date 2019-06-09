@@ -2,6 +2,7 @@
 import Wall from '../models/Wall';
 import { responseSuccess, isValidId } from '../helpers';
 import ApplicationError from '../helpers/Error';
+import messages from '../helpers/messages';
 
 /**
  * Controller for meme walls
@@ -15,7 +16,7 @@ export default class WallController {
    * @return {Promise} a response object containing the created meme wall.
    */
   static async create(req, res, next) {
-    const { userId } = req.user;
+    const { id } = req.user;
     const { name } = req.body;
     if (!name)
       return next(
@@ -27,12 +28,12 @@ export default class WallController {
 
     const memeWall = await Wall.create({
       name,
-      creator: userId,
+      creator: id,
     });
     return responseSuccess(
       201,
       memeWall,
-      'Meme wall created successfully',
+      messages.success('meme wall', 'created'),
       res
     );
   }
@@ -47,21 +48,19 @@ export default class WallController {
   static async getOne(req, res, next) {
     const { id } = req.params;
     if (!isValidId(id))
-      return next(new ApplicationError('Please provide a valid meme ID', 400));
+      return next(
+        new ApplicationError(messages.invalidField('meme', 'ID'), 400)
+      );
     const memeWall = await Wall.findOne({ _id: id })
       .lean()
-      .populate('memes');
+      .populate('memes')
+      .populate('creator');
     if (!memeWall)
-      return next(
-        new ApplicationError(
-          'Oops, looks like this meme wall does not exist!',
-          404
-        )
-      );
+      return next(new ApplicationError(messages.notFound('meme wall'), 404));
     return responseSuccess(
       200,
       memeWall,
-      'meme wall fetched successfully',
+      messages.success('meme wall', 'fetched'),
       res
     );
   }
@@ -84,8 +83,13 @@ export default class WallController {
 
     const walls = await Wall.paginate({}, options);
     if (walls.length === 0)
-      return next(new ApplicationError('No meme walls available', 404));
-    return responseSuccess(200, walls, 'Meme walls fetched successfully', res);
+      return next(new ApplicationError(messages.empty('meme wall'), 404));
+    return responseSuccess(
+      200,
+      walls,
+      messages.success('meme walls', 'fetched'),
+      res
+    );
   }
 
   /**
@@ -108,16 +112,11 @@ export default class WallController {
       { new: true }
     );
     if (!updated)
-      return next(
-        new ApplicationError(
-          'Oops, looks like this meme wall does not exist!',
-          404
-        )
-      );
+      return next(new ApplicationError(messages.notFound('meme wall'), 404));
     return responseSuccess(
       200,
       updated,
-      'meme added to wall successfully',
+      messages.success('wall', 'added the meme to'),
       res
     );
   }
@@ -142,16 +141,11 @@ export default class WallController {
       { new: true }
     );
     if (!updated)
-      return next(
-        new ApplicationError(
-          'Oops, looks like this meme wall does not exist!',
-          404
-        )
-      );
+      return next(new ApplicationError(messages.notFound('meme wall'), 404));
     return responseSuccess(
       200,
       updated,
-      'meme removed from wall successfully',
+      messages.success('wall', 'removed the meme from'),
       res
     );
   }

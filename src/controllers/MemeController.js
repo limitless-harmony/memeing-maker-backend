@@ -1,8 +1,9 @@
 /* eslint no-bitwise: ["error", { "int32Hint": true }] */
 import Meme from '../models/Meme';
+import Rule from '../models/Rule';
 import { responseSuccess, isValidId } from '../helpers';
 import ApplicationError from '../helpers/Error';
-
+import messages from '../helpers/messages';
 /**
  * [MemeController description]
  */
@@ -25,8 +26,13 @@ class MemeController {
 
     const memes = await Meme.paginate({}, options);
     if (memes.length === 0)
-      return next(new ApplicationError('No memes available', 404));
-    return responseSuccess(200, memes, 'Memes fetched successfully', res);
+      return next(new ApplicationError(messages.empty('meme'), 404));
+    return responseSuccess(
+      200,
+      memes,
+      messages.success('memes', 'fetched'),
+      res
+    );
   }
 
   /**
@@ -39,11 +45,11 @@ class MemeController {
   static async getFeatured(req, res, next) {
     const memes = await Meme.find({ featured: true }).lean();
     if (memes.length === 0)
-      return next(new ApplicationError('No featured memes available', 404));
+      return next(new ApplicationError(messages.empty('featured meme'), 404));
     return responseSuccess(
       200,
       memes,
-      'Featured memes fetched successfully',
+      messages.success('featured memes', 'fetched'),
       res
     );
   }
@@ -61,7 +67,7 @@ class MemeController {
 
     let response = {};
     let code = 201;
-    let message = 'Meme created successfully';
+    let message = messages.success('meme', 'created');
     if (method === 'POST') {
       response = await Meme.create({
         topText,
@@ -75,7 +81,7 @@ class MemeController {
         { topText, bottomText, image }
       );
       code = 200;
-      message = 'Meme edited successfully';
+      message = messages.success('meme', 'edited');
     }
     return responseSuccess(code, response, message, res);
   }
@@ -87,13 +93,13 @@ class MemeController {
    * @param {Object} next the next function
    */
   static async create(req, res, next) {
-    const { userId } = req.user;
+    const { id } = req.user;
     const { topText, bottomText, image } = req.body;
     const meme = {
       topText,
       bottomText,
       image,
-      creator: userId,
+      creator: id,
     };
     req.data = meme;
     next();
@@ -106,20 +112,18 @@ class MemeController {
    * @param {Object} next the next function
    */
   static async edit(req, res, next) {
-    const { userId, isAdmin } = req.user;
+    const { id, isAdmin } = req.user;
     const { memeId } = req.params;
     const { topText, bottomText, image } = req.body;
     const meme = await Meme.findOne({ _id: memeId }).lean();
-    if (isAdmin || userId === meme.creator.toString()) {
+    if (isAdmin || id === meme.creator.toString()) {
       meme.topText = topText;
       meme.bottomText = bottomText;
       meme.image = image;
       req.data = meme;
       return next();
     }
-    return next(
-      new ApplicationError("You don't have permission to edit this meme", 403)
-    );
+    return next(new ApplicationError(messages.forbidden(), 403));
   }
 
   /**
@@ -132,15 +136,15 @@ class MemeController {
   static async getOne(req, res, next) {
     const { memeId } = req.params;
     if (!isValidId(memeId))
-      return next(new ApplicationError('Please provide a valid meme ID', 400));
+      return next(
+        new ApplicationError(messages.invalidField('meme', 'ID'), 400)
+      );
     const meme = await Meme.findOne({ _id: memeId })
       .lean()
       .populate('creator');
     if (!meme)
-      return next(
-        new ApplicationError('Oops, looks like this meme does not exist!', 404)
-      );
-    return responseSuccess(200, meme, 'Meme fetched successfully', res);
+      return next(new ApplicationError(messages.notFound('meme'), 404));
+    return responseSuccess(200, meme, messages.success('meme', 'fetched'), res);
   }
 
   /**
@@ -154,23 +158,25 @@ class MemeController {
     const { reactions } = req.body;
     const { memeId } = req.params;
     if (!isValidId(memeId))
-      return next(new ApplicationError('Please provide a valid meme ID', 400));
+      return next(
+        new ApplicationError(messages.invalidField('meme', 'ID'), 400)
+      );
     const castReactions = reactions | 0;
     if (!castReactions)
-      return next(new ApplicationError('Reactions must be a number', 400));
+      return next(
+        new ApplicationError(messages.badDataType('reactions', 'number'), 400)
+      );
     const updatedMeme = await Meme.findOneAndUpdate(
       { _id: memeId },
       { $inc: { reactions: castReactions } },
       { new: true }
     );
     if (!updatedMeme)
-      return next(
-        new ApplicationError('Oops, looks like this meme does not exist!', 404)
-      );
+      return next(new ApplicationError(messages.notFound('meme'), 404));
     return responseSuccess(
       200,
       updatedMeme,
-      'You have successfully reacted to this meme',
+      messages.success('meme', 'reacted to'),
       res
     );
   }
@@ -184,23 +190,42 @@ class MemeController {
    */
   static async flag(req, res, next) {
     const { memeId } = req.params;
-    const { userId } = req.user;
+    const { id } = req.user;
     if (!isValidId(memeId))
-      return next(new ApplicationError('Please provide a valid meme ID', 400));
+      return next(
+        new ApplicationError(messages.invalidField('meme', 'ID'), 400)
+      );
 
     const flaggedMeme = await Meme.findOneAndUpdate(
       { _id: memeId },
-      { $addToSet: { flagged: userId } },
+      { $addToSet: { flagged: id } },
       { new: true }
     );
     if (!flaggedMeme)
-      return next(
-        new ApplicationError('Oops, looks like this meme does not exist!', 404)
-      );
+      return next(new ApplicationError(messages.notFound('meme'), 404));
     return responseSuccess(
       200,
       flaggedMeme,
-      'You have successfully flagged this meme',
+      messages.success('meme', 'flagged'),
+      res
+    );
+  }
+
+  /**
+   * Gets the rules of play
+   * @param {Object} req the request object
+   * @param {Object} res the response object
+   * @param {Object} next the next function
+   * @return {Promise} a response object containing an array of memes
+   */
+  static async getRules(req, res, next) {
+    const rules = await Rule.find({}).lean();
+    if (rules.length === 0)
+      return next(new ApplicationError(messages.empty('rule'), 404));
+    return responseSuccess(
+      200,
+      rules,
+      messages.success('rules', 'fetched'),
       res
     );
   }
