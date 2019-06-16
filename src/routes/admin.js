@@ -15,7 +15,7 @@ router.post(
 
 router.put('/memes/:memeId/feature', tryCatch(AdminController.featureAMeme));
 router.put(
-  '/memes/:memeId/unfeature',
+  '/memes/:memeId/un-feature',
   tryCatch(AdminController.unFeatureAMeme)
 );
 router.delete('/memes/:memeId/delete', tryCatch(AdminController.deleteMeme));

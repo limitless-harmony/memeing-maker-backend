@@ -72,16 +72,8 @@ export default class WallController {
    * @param {Object} next the next function
    * @return {Promise} a response object containing an array of memes
    */
-  static async getMany(req, res, next) {
-    const { page, limit } = req.query;
-    const options = {
-      page: page || 1,
-      limit: limit || 10,
-      lean: true,
-      sort: { createdAt: -1 },
-    };
-
-    const walls = await Wall.paginate({}, options);
+  static async getAll(req, res, next) {
+    const walls = await Wall.find({});
     if (walls.length === 0)
       return next(new ApplicationError(messages.empty('meme wall'), 404));
     return responseSuccess(
